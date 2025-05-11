@@ -1,0 +1,39 @@
+# === JUCE compiled files ===
+*.vst3
+*.dll
+*.exe
+*.lib
+*.obj
+*.pdb
+*.xcworkspace
+*.xcuserstate
+
+# === SuperCollider temp & swap files ===
+*.swp
+*.tmp
+
+# === Processing build artifacts ===
+*.class
+*.jar
+*.java~
+
+# === macOS / Windows system files ===
+.DS_Store
+Thumbs.db
+
+# === VS Code project settings ===
+.vscode/
+
+# === Backup files ===
+*~
+*.bak
+
+# === JUCE Builds folders ===
+**/Builds/
+**/build/
+**/Build/
+
+# === CMake & intermediate files ===
+CMakeCache.txt
+CMakeFiles/
+cmake-build-*/
