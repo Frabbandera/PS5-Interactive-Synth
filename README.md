@@ -1,7 +1,5 @@
 # Tutorial Avvio Applicazione
 
----
-
 ## 📁 1. Donwload Files
 
 ### 🔹 SuperCollider
@@ -24,13 +22,13 @@ Contiene lo script che legge i dati dal controller PS4/PS5 e li invia a SuperCol
 
 ## 🧰 2. Requisiti Processing – Installazione librerie
 
-### Librerie necessarie:
+### 🔹 Librerie necessarie:
 
 - `oscP5`  
 - `Game Control Plus`  
 - `G4P` (solo per configuratore)
 
-### Come installarle:
+### 🔹 Come installarle:
 
 1. Apri Processing
 2. Vai su **Sketch > Import Library... > Add Library...**
@@ -60,8 +58,7 @@ for (int i = 0; i < devices.length; i++) {
 }
 ```
 
-Copia il numero corretto (es. 2) e sostituisci la riga nel file OSC_PS5_Handlers.pde:
-device = control.getDevice(2);  // sostituisci 2 con il tuo numero
+Copia il numero corretto (es. 2) e sostituisci la riga nel file OSC_PS5_Handlers.pde: device = control.getDevice(2); 
 
 ---
 
@@ -72,5 +69,3 @@ device = control.getDevice(2);  // sostituisci 2 con il tuo numero
 3. Avvia lo sketch OSC_PS5_Handlers.pde in Processing
 4. Suona con la tastiera MIDI e interagisci con il gamepad (trigger, stick, pulsanti)
 5. La GUI si aggiornerà automaticamente
-
----
