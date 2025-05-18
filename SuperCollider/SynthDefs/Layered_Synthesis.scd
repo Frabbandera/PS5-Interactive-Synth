@@ -8,7 +8,7 @@ SynthDef(\interactiveSynth, {
 	|freq = 440, amp = 0.5, waveform1 = 0, waveform2 = 0, waveform3 = 0,
 	attack = 0.01, decay = 0.3, sustain = 0.5, release = 0.3, gate = 1,
     cutoff = 20000, lfoFreq = 0, lfoDepth = 0,
-    out = 0, fxSendBus1 = 0, fxSendBus2 = 0, sendLevel1 = 0.3, sendLevel2 = 0.2,
+    out = 0, fxSendBus1 = 0, fxSendBus2 = 0, fxSendBus3 = 0, fxSendBus4 = 0, sendLevel1 = 0.3, sendLevel2 = 0.2, sendLevel3 = 0.3, sendLevel4 = 0.2,
     octave1 = 0, octave2 = 0, octave3 = 0,
     level1 = 0.3, level2 = 0.3, level3 = 0.3|
 
@@ -47,7 +47,7 @@ SynthDef(\interactiveSynth, {
     ]) * level3;
 
     // 1.2 Somma e normalizzazione
-    sig = (sig1 + sig2 + sig3);
+    sig = (sig1 + sig2 + sig3) * 0.3;
 
     // 1.3 Inviluppo ADSR
     env = Env.adsr(attack, decay, sustain, release);   // Costruzione inviluppo
@@ -62,7 +62,9 @@ SynthDef(\interactiveSynth, {
 
     // 1.6 Output
     Out.ar(out, sig!2);                                // Uscita principale stereo
-    Out.ar(fxSendBus1, sig * sendLevel1);              // Send al bus FX 1 (reverb)
-    Out.ar(fxSendBus2, sig * sendLevel2);              // Send al bus FX 2 (delay)
+    Out.ar(fxSendBus1, sig!2 * sendLevel1);            // Send al bus FX 1 (reverb)
+    Out.ar(fxSendBus2, sig!2 * sendLevel2);            // Send al bus FX 2 (delay)
+	Out.ar(fxSendBus3, sig!2 * sendLevel3);            // Send al bus FX 1 (flanger)
+    Out.ar(fxSendBus4, sig!2 * sendLevel4);            // Send al bus FX 2 (distortion)
 
 }).add;

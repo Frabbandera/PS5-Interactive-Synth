@@ -29,9 +29,10 @@ MIDIIn.connectAll;          // Collega tutti i dispositivi MIDI in ingresso disp
         \cutoff, ~cutoff, \lfoFreq, ~lfoFreq, \lfoDepth, ~lfoDepth,
 
         // Routing verso gli effetti
-        \sendLevel1, ~sendLevel, \sendLevel2, ~sendLevel2,
-		\out, 0,                                           // Uscita diretta
-        \fxSendBus1, ~fxBus1, \fxSendBus2, ~fxBus2         // Send FX verso bus di effetto
+       \sendLevel1, ~sendLevel, \sendLevel2, ~sendLevel2, \sendLevel3, ~sendLevel3, \sendLevel4, ~sendLevel4,
+       \out, 0,
+       \fxSendBus1, ~fxBus1, \fxSendBus2, ~fxBus2, \fxSendBus3, ~fxBus3, \fxSendBus4, ~fxBus4
+
 
     ], ~synthGroup);  // allocazione synth all’interno del gruppo ~synthGroup
 

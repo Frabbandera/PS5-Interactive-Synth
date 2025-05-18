@@ -3,28 +3,24 @@
 (
 // === 1. Controllo plugins: istanziamento e apertura degli effetti nel server audio ===
 
-// 1.1 FX Reverb
+// 1.1 FX Reverb (JUCE)
+~fxReverb = Synth(\reverbPluginFX, [\inBus, ~fxBus1, \out, 0.5], ~fxGroup);     // Crea un'istanza del SynthDef \ReverbPluginFX, ricevendo segnale da ~fxBus1 e mandandolo in uscita
+~reverbPluginPath = "C:/Program Files/Common Files/VST3/Riverb_prova.vst3";     // Specifica il percorso del plugin VST .vst3 sul sistema
+~reverbPlugin = VSTPluginController(~fxReverb, id: \reverbplugin);              // Collega un controller VST all'istanza Synth appena creata
+~reverbPlugin.open(~reverbPluginPath, editor: true, verbose: true);             // Apre il plugin dal percorso indicato, mostra l'interfaccia grafica, stampa info dettagliate
 
-// Crystalline (VST esterno)
-~fxReverb = Synth(\crystallineFX, [\inBus, ~fxBus1, \out, 0], ~fxGroup);     // Crea un'istanza del SynthDef \crystallineFX, ricevendo segnale da ~fxBus1 e mandandolo in uscita
+// 1.2 FX Delay (JUCE)
+~fxDelay = Synth(\simpleFXDelay, [\inBus, ~fxBus2, \out, 0.5], ~fxGroup);
+~delayPluginPath = "C:/Program Files/Common Files/VST3/DelayPlugin.vst3";
+~delayPlugin = VSTPluginController(~fxDelay, id: \delayplugin);
+~delayPlugin.open(~delayPluginPath, editor: true, verbose: true);
 
-~crystallinePath = "C:/Program Files/VSTPlugins/Baby Audio/Crystalline.dll"; // Specifica il percorso del plugin VST .dll sul sistema
-~crystalline = VSTPluginController(~fxReverb, id: \crystalline);             // Collega un controller VST all'istanza Synth appena creata
-~crystalline.open(~crystallinePath, editor: true, verbose: true);            // Apre il plugin dal percorso indicato, mostra l'interfaccia grafica, stampa info dettagliate
-~crystalline.editor;                                                         // Visualizza l'editor del plugin (utile per debugging o modifiche live)
+// 1.3 FX Flanger (SC)
+~fxFlanger = Synth(\flangerFX, [\inBus, ~fxBus3, \out, 0.5], ~fxGroup);
 
-// ValhallaRoom (VST esterno)
-/*
-~fxReverb = Synth(\valhallaRoomFX, [\inBus, ~fxBus1, \out, 0], ~fxGroup);
-
-~valhallaPath = "C:/Program Files/Steinberg/VSTPlugins/ValhallaDSP/ValhallaRoom_x64.dll";
-~valhalla = VSTPluginController(~fxReverb, id: \valhalla);
-~valhalla.open(~valhallaPath, editor: true, verbose: true);
-~valhalla.editor;
-*/
-
-// 1.2 FX Delay
-
-// simpleFXDelay (nativo SC)
-~fxDelay = Synth(\simpleFXDelay, [\inBus, ~fxBus2, \out, 0], ~fxGroup);
+// 1.4 FX Distortion (JUCE)
+~fxDistortion = Synth(\distortionPluginFX, [\inBus, ~fxBus4, \out, 0.5], ~fxGroup);
+~distortionPluginPath = "C:/Program Files/Common Files/VST3/DistortionPlugin.vst3";
+~distortionPlugin = VSTPluginController(~fxDistortion, id: \distortionplugin);
+~distortionPlugin.open(~distortionPluginPath, editor: true, verbose: true);
 )
