@@ -1,8 +1,8 @@
-// 1. Inclusione Librerie
+// 1. Inclusione Intestazioni
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-// 2. Definizione Costruttore
+// 2. Definizione Costruttore DSP
 DelayPluginAudioProcessor::DelayPluginAudioProcessor()
     : parameters(*this, nullptr, juce::Identifier("DelayParams"), {
 
@@ -30,15 +30,15 @@ void DelayPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
     const int numSamples = buffer.getNumSamples();
     const int numChannels = getTotalNumInputChannels();
 
-    // 4.1 Lettura valori correnti dei parametri
+    // 4.2 Lettura valori correnti dei parametri
     float delayTimeMs = *parameters.getRawParameterValue("delayTime");
     float feedback = *parameters.getRawParameterValue("feedback");
     float mix = *parameters.getRawParameterValue("mix");
 
-    // 4.2 Conversione tempo di delay (ms -> #campioni)
+    // 4.3 Conversione tempo di delay (ms -> #campioni)
     const int delaySamples = static_cast<int>(getSampleRate() * delayTimeMs / 1000.0);
 
-    // 4.3 Elaborazione per ogni canale (L/R)
+    // 4.4 Elaborazione per ogni canale (L/R)
     for (int ch = 0; ch < numChannels; ++ch)
     {
 
@@ -47,7 +47,7 @@ void DelayPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 
         int localWrite = writePosition;
 
-        // 4.3.1 ELaborazione per ogni campione
+        // 4.4.1 ELaborazione per ogni campione
         for (int i = 0; i < numSamples; ++i)
         {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-// 1. Inclusione Librerie
+// 1. Inclusione Intestazioni
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 

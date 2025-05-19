@@ -1,6 +1,6 @@
 #pragma once
 
-// 1. Inclusione Librerie
+// 1. Inclusione Intestazioni
 #include <JuceHeader.h>
 
 // 2. Dichiarazione clsse DSP principale
@@ -22,13 +22,13 @@ public:
 
     const juce::String getName() const override { return JucePlugin_Name; }
 
-    // 2.3 Capacit� MIDI
+    // 2.3 Plugin Metadata
     bool acceptsMidi() const override { return false; }
     bool producesMidi() const override { return false; }
     bool isMidiEffect() const override { return false; }
     double getTailLengthSeconds() const override { return 0.0; }
 
-    // 2.4 Presets (non utilizzati)
+    // 2.4 Plugin Presets (non utilizzati)
     int getNumPrograms() override { return 1; }
     int getCurrentProgram() override { return 0; }
     void setCurrentProgram(int index) override {}

@@ -1,7 +1,7 @@
-// 1. Inclusione Librerie
+// 1. Inclusione Intestazioni
 #include "PluginEditor.h"
 
-// 2. Definizione Costruttore
+// 2. Definizione Costruttore GUI
 DelayPluginAudioProcessorEditor::DelayPluginAudioProcessorEditor(DelayPluginAudioProcessor& p)
     : AudioProcessorEditor(&p), processor(p)
 {
