@@ -57,11 +57,17 @@ AXIS_L2 = 4             # L2
 AXIS_R2 = 5             # R2
 
 # 5. Inizializzazione parametri 
+glide = 1.0            # 1.0 = neutro, 2.0 = +1 ottava, 0.5 = -1 ottava
+glideTime = 0.2        # tempo del glide in secondi
+last_glide = None
+last_glideTime = None
+
+
 lfoFreq = 0.0
 lfoDepth = 0.0
 lfoDepth_step = 0.01
 cutoff = 20
-cutoff_step = 0.2
+cutoff_step = 0.3
 
 # 6. Inizializzazione cache 
 last_lfoFreq = None
@@ -150,11 +156,11 @@ while True:
 
     # 8.1 BUTTONS
 
-    # 8.1.1 Debounced Cutoff (Triangolo = incrementa, Freccia su = decrementa)
-    if joystick.get_button(BUTTON_TRIANGLE):
+    # 8.1.1 Debounced Cutoff (Freccia destra = incrementa, Freccia sinistra = decrementa)
+    if joystick.get_button(BUTTON_DPAD_RIGHT):
         cutoff += cutoff_step
         last_cutoff_change = now
-    elif joystick.get_button(BUTTON_DPAD_UP):
+    elif joystick.get_button(BUTTON_DPAD_LEFT):
         cutoff -= cutoff_step
         last_cutoff_change = now
     cutoff = max(0, min(20, cutoff))
@@ -176,6 +182,19 @@ while True:
         force_sync = False
     updated = updated or sent
 
+    # 8.1.3 Glide (Freccia su = +1 ottava, Freccia giù = -1 ottava, altrimenti 1.0)
+    if joystick.get_button(BUTTON_DPAD_UP):
+        glide = 2.0
+    elif joystick.get_button(BUTTON_DPAD_DOWN):
+        glide = 0.5
+    else:
+        glide = 1.0
+
+    sent1, last_glide = send_if_changed("/controller/glide", glide, last_glide)
+    #sent2, last_glideTime = send_if_changed("/controller/glideTime", glideTime, last_glideTime)
+    updated = updated or sent1 
+
+
     # 8.2 AXIS
 
     # 8.2.1 LFO Frequency (R2 - L2)
@@ -188,9 +207,19 @@ while True:
     updated = updated or sent
 
     # 8.2.2 Riverbero (Stick sinistro Y)
-    ly = abs(joystick.get_axis(AXIS_LEFT_STICK_Y))
-    sent, last_sendLevel1 = send_if_changed("/controller/sendLevel1", ly, last_sendLevel1)
-    updated = updated or sent
+    ly_raw = joystick.get_axis(AXIS_LEFT_STICK_Y)
+
+    # Livello riverbero (massimo a ±1, minimo a 0)
+    sendLevel1 = abs(ly_raw)
+    sent1, last_sendLevel1 = send_if_changed("/controller/sendLevel1", sendLevel1, last_sendLevel1)
+
+    # Room size: 0.5 al centro, sale a 1.0 con ly = +1, scende a 0.0 con ly = -1
+    roomSize = 0.5 - (ly_raw * 0.5)
+    roomSize = max(0, min(1, roomSize))  # clip tra 0 e 1
+    sent2, _ = send_if_changed("/controller/r_roomsize", roomSize, None)
+
+    updated = updated or sent1 or sent2
+
 
     # 8.2.3 Delay (Stick sinistro X) 
     lx = abs(joystick.get_axis(AXIS_LEFT_STICK_X))
@@ -208,6 +237,7 @@ while True:
     updated = updated or sent
 
     if updated:
-        print(f"LFO: {lfoFreq:.2f}, lfoDepth: {lfoDepth:.2f}, Cutoff: {cutoff:.2f}, Reverb: {ly:.2f}, Delay: {lx:.2f}, Flanger: {ry:.2f}, Distortion: {rx:.2f}")    # Debug Console (solo se un parametro viene modificato)
+        print(f"LFO: {lfoFreq:.2f}, lfoDepth: {lfoDepth:.2f}, Cutoff: {cutoff:.2f}, Reverb Send: {sendLevel1:.2f}, Room Size: {roomSize:.2f}, Delay: {lx:.2f}, Flanger: {ry:.2f}, Distortion: {rx:.2f}")
 
     time.sleep(0.05)
+
