@@ -53,7 +53,7 @@ void DistortionPluginAudioProcessor::prepareToPlay (double sampleRate, int sampl
 // 7. Disattivazione 
 void DistortionPluginAudioProcessor::releaseResources() {}
 
-// 8. Definizione Compatibilit� Layout Canali
+// 8. Definizione Compatibilità Layout Canali
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool DistortionPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
@@ -130,11 +130,29 @@ juce::AudioProcessorValueTreeState::ParameterLayout DistortionPluginAudioProcess
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
 
-    params.push_back(std::make_unique<juce::AudioParameterFloat>("drive", "Drive", juce::NormalisableRange<float>(1.f, 30.f), 5.f));
-    params.push_back(std::make_unique<juce::AudioParameterFloat>("tone", "Tone", juce::NormalisableRange<float>(100.f, 10000.f), 5000.f));
-    params.push_back(std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.f, 1.f, 0.5f));
-    params.push_back(std::make_unique<juce::AudioParameterFloat>("output", "Output", 0.f, 1.f, 0.8f));
+    // Drive: 1 – 30 con step 1
+    params.push_back(std::make_unique<juce::AudioParameterFloat>(
+        "drive", "Drive",
+        juce::NormalisableRange<float>(1.f, 30.f, 1.f),
+        5.f));
+
+    // Tone: 100 – 10000 Hz con step 100
+    params.push_back(std::make_unique<juce::AudioParameterFloat>(
+        "tone", "Tone",
+        juce::NormalisableRange<float>(100.f, 10000.f, 100.f),
+        5000.f));
+
+    // Mix: 0.0 – 1.0 con step 0.01
+    params.push_back(std::make_unique<juce::AudioParameterFloat>(
+        "mix", "Mix",
+        juce::NormalisableRange<float>(0.f, 1.f, 0.01f),
+        0.5f));
+
+    // Output: 0.0 – 1.0 con step 0.01
+    params.push_back(std::make_unique<juce::AudioParameterFloat>(
+        "output", "Output",
+        juce::NormalisableRange<float>(0.f, 1.f, 0.01f),
+        0.8f));
 
     return { params.begin(), params.end() };
 }
-
