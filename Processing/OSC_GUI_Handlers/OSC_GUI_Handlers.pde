@@ -1,5 +1,3 @@
-// === OSC_GUI_HANDLERS.PDE ===
-
 // === 1.  Setup Iniziale ===
 
 // 1.1 Importazione librerie
@@ -18,7 +16,7 @@ Group oscGroup, envGroup, lfoGroup, fxGroup, joypadGroup;  // Dichiarazione grup
 // 1.3 Inizializzazione GUI
 void setup() {
   
-  size(1000, 600);
+  size(1450, 820);
   
   // 1.3.1 Setup
   sc = new NetAddress("127.0.0.1", 57120);
@@ -37,11 +35,9 @@ void setup() {
 
 // 1.4 Gestione Sfondo
 void draw() {
-  
-  background(255, 253, 240);  // Bianco crema
+  background(255, 253, 240);
   fill(240);
-  text("Controlli via Controller PS5 (OSC)", 20, 20);
-  
+  text("Controlli via Controller PS5 (OSC)", 30, 30);
 }
 
 // === 2. Funzioni Setup GUI
@@ -50,42 +46,53 @@ void draw() {
 void setupOscillators() {
   
   oscGroup = cp5.addGroup("Oscillators")
-    .setPosition(10, 10)
-    .setSize(300, 580)
+    .setPosition(10, 50)
+    .setSize(440, 380)
     .setBackgroundColor(color(235, 220, 180, 180))
     .setLabel("Oscillators");
 
   String[] waveNames = {"Sine", "Saw", "Square", "LFTri", "LFSaw", "Blip"};
   
   for (int i = 0; i < 3; i++) {
-    
-    int y0 = 30 + i * 180;
-    
+    int y0 = 10 + i * 130;
+
     cp5.addDropdownList("waveform" + (i + 1))
       .setPosition(20, y0)
-      .setSize(120, 100)
+      .setSize(140, 120)
       .setItems(waveNames)
       .setGroup(oscGroup)
-      .setLabel("Wave " + (i + 1));
-      
+      .setLabel("Wave " + (i + 1))
+      .setColorBackground(color(205, 180, 140))
+      .setColorForeground(color(180, 125, 85))
+      .setColorActive(color(180, 125, 85));
+
     cp5.addKnob("level" + (i + 1))
-      .setPosition(160, y0 + 18)
-      .setRadius(25)
+      .setPosition(210, y0 + 10)
+      .setRadius(35)
       .setRange(0, 1)
       .setValue(0.3)
       .setGroup(oscGroup)
-      .setLabel("Level");
-      
+      .setLabel("Level")
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setColorBackground(color(205, 180, 140))
+      .setColorForeground(color(180, 125, 85))
+      .setColorActive(color(180, 125, 85));
+
     cp5.addKnob("octave" + (i + 1))
-      .setPosition(230, y0 + 18)
-      .setRadius(25)
+      .setPosition(320, y0 + 10)
+      .setRadius(35)
       .setRange(-2, 2)
-      .setNumberOfTickMarks(4)
       .snapToTickMarks(true)
+      .setNumberOfTickMarks(4)
       .setValue(0)
       .setGroup(oscGroup)
-      .setLabel("Octave");
-
+      .setLabel("Octave")
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setColorBackground(color(205, 180, 140))
+      .setColorForeground(color(180, 125, 85))
+      .setColorActive(color(180, 125, 85));
   }
 }
 
@@ -93,142 +100,385 @@ void setupOscillators() {
 void setupEnvelope() {
   
   envGroup = cp5.addGroup("Envelope")
-    .setPosition(320, 10)
-    .setSize(330, 150)
-    .setBackgroundColor(color(255, 180, 180, 180))  // Rosso chiaro
+    .setPosition(460, 50)
+    .setSize(480, 180)
+    .setBackgroundColor(color(255, 180, 180, 180))
     .setLabel("ADSR Envelope");
 
   cp5.addSlider("attack")
-    .setPosition(20, 30)
-    .setSize(50, 100)
+    .setPosition(30, 40)
+    .setSize(70, 120)
     .setRange(0, 5)
     .setValue(0.01)
     .setGroup(envGroup)
-    .setLabel("Attack");
+    .setLabel("Attack")
+    .setColorBackground(color(205, 140, 150))
+    .setColorForeground(color(150, 20, 55))
+    .setColorActive(color(150, 20, 55));
 
   cp5.addSlider("decay")
-    .setPosition(100, 30)
-    .setSize(50, 100)
+    .setPosition(150, 40)
+    .setSize(70, 120)
     .setRange(0, 5)
     .setValue(0.3)
     .setGroup(envGroup)
-    .setLabel("Decay");
+    .setLabel("Decay")
+    .setColorBackground(color(205, 140, 150))
+    .setColorForeground(color(150, 20, 55))
+    .setColorActive(color(150, 20, 55));
 
   cp5.addSlider("sustain")
-    .setPosition(180, 30)
-    .setSize(50, 100)
+    .setPosition(270, 40)
+    .setSize(70, 120)
     .setRange(0, 1)
     .setValue(0.5)
     .setGroup(envGroup)
-    .setLabel("Sustain");
+    .setLabel("Sustain")
+    .setColorBackground(color(205, 140, 150))
+    .setColorForeground(color(150, 20, 55))
+    .setColorActive(color(150, 20, 55));
 
   cp5.addSlider("release")
-    .setPosition(260, 30)
-    .setSize(50, 100)
+    .setPosition(390, 40)
+    .setSize(70, 120)
     .setRange(0, 5)
     .setValue(0.3)
     .setGroup(envGroup)
-    .setLabel("Release");
-    
+    .setLabel("Release")
+    .setColorBackground(color(205, 140, 150))
+    .setColorForeground(color(150, 20, 55))
+    .setColorActive(color(150, 20, 55));
 }
 
 // 2.3 Modulation Setup
 void setupModulation() {
   
   lfoGroup = cp5.addGroup("Modulation")
-    .setPosition(320, 180)
-    .setSize(330, 150)
-    .setBackgroundColor(color(200, 180, 255, 180))  // viola chiaro
+    .setPosition(460, 250)
+    .setSize(480, 180)
+    .setBackgroundColor(color(200, 180, 255, 180))
     .setLabel("LFO & Filter");
 
   cp5.addKnob("lfoFreq")
-    .setPosition(20, 30)
-    .setRadius(40)
+    .setPosition(40, 40)
+    .setRadius(45)
     .setRange(0, 20)
     .setValue(0)
     .setGroup(lfoGroup)
-    .setLabel("LFO Freq");
+    .setLabel("LFO Freq")
+    .setDragDirection(ControlP5.VERTICAL)
+    .setResolution(-100)
+    .setColorBackground(color(150, 140, 225))
+    .setColorForeground(color(80, 0, 160))
+    .setColorActive(color(80, 0, 160));
 
   cp5.addKnob("lfoDepth")
-    .setPosition(120, 30)
-    .setRadius(40)
+    .setPosition(200, 40)
+    .setRadius(45)
     .setRange(0, 1)
     .setValue(0)
     .setGroup(lfoGroup)
-    .setLabel("LFO Depth");
+    .setLabel("LFO Depth")
+    .setDragDirection(ControlP5.VERTICAL)
+    .setResolution(-100)
+    .setColorBackground(color(150, 140, 225))
+    .setColorForeground(color(80, 0, 160))
+    .setColorActive(color(80, 0, 160));
 
   cp5.addKnob("cutoff")
-    .setPosition(220, 30)
-    .setRadius(40)
+    .setPosition(360, 40)
+    .setRadius(45)
     .setRange(0, 20)
-    .setValue(20)
+    .setValue(10)
     .setGroup(lfoGroup)
-    .setLabel("Cutoff");
-    
+    .setLabel("Cutoff")
+    .setDragDirection(ControlP5.VERTICAL)
+    .setResolution(-100)
+    .setColorBackground(color(150, 140, 225))
+    .setColorForeground(color(80, 0, 160))
+    .setColorActive(color(80, 0, 160));
 }
 
 // 2.4 FXs Setup
 void setupFX() {
   
   fxGroup = cp5.addGroup("FXPads")
-    .setPosition(320, 350)
-    .setSize(330, 240)
-    .setBackgroundColor(color(170, 220, 170, 180))  // verde soft
+    .setPosition(10, 450)
+    .setSize(1400, 360)
+    .setBackgroundColor(color(170, 220, 170, 180))
     .setLabel("Effects Pads");
 
-  cp5.addKnob("FX3")
-    .setPosition(20, 20)
-    .setRadius(30)
+  cp5.addSlider("FX3")
+    .setPosition(455, 10)
+    .setSize(180, 20)
     .setRange(0, 1)
     .setValue(0)
     .setGroup(fxGroup)
-    .setLabel("Reverb");
+    .setLabel("Reverb")
+    .setColorBackground(color(120, 180, 140))
+    .setColorForeground(color(20, 100, 20))
+    .setColorActive(color(20, 100, 20));
     
-  cp5.addKnob("FX4")
-    .setPosition(100, 20)
-    .setRadius(30)
+    cp5.addKnob("r_roomsize")
+      .setPosition(480, 35)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Room Size");
+    
+    cp5.addKnob("r_damping")
+      .setPosition(560, 35)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Damping");
+    
+     cp5.addKnob("r_mix")
+      .setPosition(480, 105)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Mix");
+      
+    cp5.addKnob("r_predelay")
+      .setPosition(560, 105)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Pre-Delay");
+
+  cp5.addSlider("FX4")
+    .setPosition(455, 180)
+    .setSize(180, 20)
     .setRange(0, 1)
     .setValue(0)
     .setGroup(fxGroup)
-    .setLabel("Delay");
+    .setLabel("Delay")
+    .setColorBackground(color(120, 180, 140))
+    .setColorForeground(color(20, 100, 20))
+    .setColorActive(color(20, 100, 20));
     
-  cp5.addKnob("FX6")
-    .setPosition(180, 20)
-    .setRadius(30)
+    cp5.addKnob("de_delaytime")
+      .setPosition(480, 210)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Delay Time");
+    
+    cp5.addKnob("de_feedback")
+      .setPosition(560, 210)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Feedback");
+    
+     cp5.addKnob("de_mix")
+      .setPosition(520, 280)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Mix");
+
+  cp5.addSlider("FX6")
+    .setPosition(710, 10)
+    .setSize(180, 20)
     .setRange(0, 1)
     .setValue(0)
     .setGroup(fxGroup)
-    .setLabel("Flanger");
+    .setLabel("Flanger")
+    .setColorBackground(color(120, 180, 140))
+    .setColorForeground(color(20, 100, 20))
+    .setColorActive(color(20, 100, 20));
     
-  cp5.addKnob("FX7")
-    .setPosition(260, 20)
-    .setRadius(30)
+    cp5.addKnob("f_rate")
+      .setPosition(710, 35)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Rate");
+    
+    cp5.addKnob("f_depth")
+      .setPosition(775, 35)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Depth");
+    
+     cp5.addKnob("f_delay")
+      .setPosition(840, 35)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Delay");
+      
+    cp5.addKnob("f_feedback")
+      .setPosition(742, 105)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Feedback");
+      
+    cp5.addKnob("f_mix")
+      .setPosition(808, 105)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Mix");
+
+  cp5.addSlider("FX7")
+    .setPosition(710, 180)
+    .setSize(180, 20)
     .setRange(0, 1)
     .setValue(0)
     .setGroup(fxGroup)
-    .setLabel("Distortion");
+    .setLabel("Distortion")
+    .setColorBackground(color(120, 180, 140))
+    .setColorForeground(color(20, 100, 20))
+    .setColorActive(color(20, 100, 20));
     
+    cp5.addKnob("di_drive")
+      .setPosition(735, 210)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Drive");
+    
+    cp5.addKnob("di_tone")
+      .setPosition(815, 210)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Tone");
+    
+     cp5.addKnob("di_mix")
+      .setPosition(735, 280)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Mix");
+      
+    cp5.addKnob("di_output")
+      .setPosition(815, 280)
+      .setRadius(25)
+      .setRange(0, 1)
+      .setValue(0)
+      .setGroup(fxGroup)
+      .setColorBackground(color(120, 180, 140))
+      .setColorForeground(color(20, 100, 20))
+      .setColorActive(color(20, 100, 20))
+      .setDragDirection(ControlP5.VERTICAL)
+      .setResolution(-100)
+      .setLabel("Output");
 }
 
 // 2.5 Joypad Setup
 void setupJoypad() {
-  
   joypadGroup = cp5.addGroup("Joypad")
-    .setPosition(670, 10)
-    .setSize(320, 580)
+    .setPosition(950, 50)
+    .setSize(460, 380)
     .setBackgroundColor(color(235, 220, 180, 180))
     .setLabel("Joystick Layout");
 
   pushMatrix();
-  translate(730, 130);
-  fill(200); 
+  translate(1050 + 195, 50 + 380);
+  fill(200);
   noStroke();
-  triangle(-40, 0, -20, -20, -20, 20);
-  triangle(40, 0, 20, -20, 20, 20);
-  triangle(0, -40, -20, -20, 20, -20);
-  triangle(0, 40, -20, 20, 20, 20);
+  float s = 60;
+  triangle(-s, 0, -s/2, -s/2, -s/2, s/2);
+  triangle( s, 0,  s/2, -s/2,  s/2, s/2);
+  triangle(0, -s, -s/2, -s/2, s/2, -s/2);
+  triangle(0,  s, -s/2, s/2, s/2, s/2);
   popMatrix();
-  
 }
 
 // === 3. Invio OSC ===
@@ -244,6 +494,7 @@ void sendOSC(String address, float val) {
 }
 
 // 3.2 Invio OSC a seguito di modifica controlli GUI
+
 void controlEvent(ControlEvent e) {
   
   String name = e.getName();
@@ -345,16 +596,16 @@ void oscEvent(OscMessage m) {
   
   // 4.3 FXs
   } else if (addr.equals("/controller/sendLevel1")) {
-    cp5.get(Knob.class, "FX3").setValue(val);
+    cp5.get(Slider.class, "FX3").setValue(val);
     
   } else if (addr.equals("/controller/sendLevel2")) {
-    cp5.get(Knob.class, "FX4").setValue(val);
+    cp5.get(Slider.class, "FX4").setValue(val);
     
   } else if (addr.equals("/controller/sendLevel3")) {
-    cp5.get(Knob.class, "FX6").setValue(val);
+    cp5.get(Slider.class, "FX6").setValue(val);
     
   } else if (addr.equals("/controller/sendLevel4")) {
-    cp5.get(Knob.class, "FX7").setValue(val);
+    cp5.get(Slider.class, "FX7").setValue(val);
     
   // 4.4 Waveforms Levels
   } else if (addr.equals("/controller/level1")) {
