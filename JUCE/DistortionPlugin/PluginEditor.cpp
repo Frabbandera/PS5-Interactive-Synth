@@ -23,6 +23,12 @@ DistortionPluginAudioProcessorEditor::DistortionPluginAudioProcessorEditor (Dist
         slider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::red);
         slider.setName(name);
 
+        // Visualizzazione decimali ottimizzata
+        if (paramId == "drive" || paramId == "tone")
+            slider.setNumDecimalPlacesToDisplay(0);  // es. 5
+        else
+            slider.setNumDecimalPlacesToDisplay(2);  // es. 0.80
+        
         addAndMakeVisible(slider);
 
         // 2.2.2 Collegamento parametro-slider
