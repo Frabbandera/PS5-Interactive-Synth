@@ -7,7 +7,7 @@
 
 // 1.1.1 LPF & LFO
 
-// 1.1.1.1 Cutoff Frequency (△ / ⇑)
+// 1.1.1.1 Cutoff Frequency (<= / =>)
 OSCdef(\cutoffFromController, { |msg|
 
 	var newCutoff = msg[1].clip(0, 20);                            // Limita il valore tra 0 e 20 kHz
@@ -54,6 +54,45 @@ OSCdef(\sendLevel1FromController, { |msg|
 
 }, '/controller/sendLevel1');
 
+// === Parametri interni del plugin riverbero (GUI)
+
+// Room Size
+OSCdef(\rRoomSizeFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~reverbPlugin.notNil) {
+		~reverbPlugin.set(1, val);  // Param index 1: Room Size
+		("[OSC] Reverb Room Size → " + val).postln;
+	}
+}, "/controller/r_roomsize");
+
+// Damping
+OSCdef(\rDampingFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~reverbPlugin.notNil) {
+		~reverbPlugin.set(2, val);  // Param index 2: Damping
+		("[OSC] Reverb Damping → " + val).postln;
+	}
+}, "/controller/r_damping");
+
+// Mix
+OSCdef(\rMixFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~reverbPlugin.notNil) {
+		~reverbPlugin.set(0, val);  // Param index 0: Mix
+		("[OSC] Reverb Mix → " + val).postln;
+	}
+}, "/controller/r_mix");
+
+// Pre Delay
+OSCdef(\rPreDelayFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~reverbPlugin.notNil) {
+		~reverbPlugin.set(3, val);  // Param index 3: Pre Delay
+		("[OSC] Reverb Pre Delay → " + val).postln;
+	}
+}, "/controller/r_predelay");
+
+
 // 1.1.2.2 Delay Send Level (asse X stick sinistro)
 OSCdef(\sendLevel2FromController, { |msg|
 
@@ -64,6 +103,36 @@ OSCdef(\sendLevel2FromController, { |msg|
     ("[OSC] Delay level aggiornato: " + ~sendLevel2).postln;
 
 }, '/controller/sendLevel2');
+
+// === Parametri interni del plugin delay (GUI)
+
+// Delay Time
+OSCdef(\deDelayTimeFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~delayPlugin.notNil) {
+		~delayPlugin.set(0, val);  // Param index 0: Delay Time
+		("[OSC] Delay Time → " + val).postln;
+	}
+}, "/controller/de_delaytime");
+
+// Feedback
+OSCdef(\deFeedbackFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~delayPlugin.notNil) {
+		~delayPlugin.set(1, val);  // Param index 1: Feedback
+		("[OSC] Delay Feedback → " + val).postln;
+	}
+}, "/controller/de_feedback");
+
+// Mix
+OSCdef(\deMixFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~delayPlugin.notNil) {
+		~delayPlugin.set(2, val);  // Param index 2: Mix
+		("[OSC] Delay Mix → " + val).postln;
+	}
+}, "/controller/de_mix");
+
 
 // 1.1.2.3 Flanger Send Level (asse Y stick destro)
 OSCdef(\sendLevel3FromController, { |msg|
@@ -86,6 +155,45 @@ OSCdef(\sendLevel4FromController, { |msg|
     ("[OSC] Distortion level aggiornato: " + newLevel).postln;
 
 }, '/controller/sendLevel4');
+
+// === Parametri interni del plugin Distortion (GUI)
+
+// Drive
+OSCdef(\diDriveFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~distortionPlugin.notNil) {
+		~distortionPlugin.set(0, val);  // Param index 0: Drive
+		("[OSC] Distortion Drive → " + val).postln;
+	}
+}, "/controller/di_drive");
+
+// Tone
+OSCdef(\diToneFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~distortionPlugin.notNil) {
+		~distortionPlugin.set(1, val);  // Param index 1: Tone
+		("[OSC] Distortion Tone → " + val).postln;
+	}
+}, "/controller/di_tone");
+
+// Mix
+OSCdef(\diMixFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~distortionPlugin.notNil) {
+		~distortionPlugin.set(2, val);  // Param index 2: Mix
+		("[OSC] Distortion Mix → " + val).postln;
+	}
+}, "/controller/di_mix");
+
+// Output
+OSCdef(\diOutputFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~distortionPlugin.notNil) {
+		~distortionPlugin.set(3, val);  // Param index 3: Output
+		("[OSC] Distortion Output → " + val).postln;
+	}
+}, "/controller/di_output");
+
 
 // 1.2 GUI
 
@@ -239,4 +347,23 @@ OSCdef(\releaseFromGUI, { |msg|
 	("[OSC] Release aggiornato: " + val).postln;
 
 }, "/controller/release");
+
+// 1.1.3 Glide (Joystick o GUI)
+
+// 1.1.3.1 Glide Factor (es. 0.5 = -1 ottava, 2.0 = +1 ottava)
+OSCdef(\glideFromController, { |msg|
+	var val = msg[1].clip(0.5, 2.0);
+	~glide = val;
+	~notes.values.do { |s| s.set(\glide, val) };
+	("[OSC] Glide factor aggiornato: " + val).postln;
+}, "/controller/glide");
+
+// 1.1.3.2 Glide Time (quanto ci mette a scivolare)
+OSCdef(\glideTimeFromController, { |msg|
+	var val = msg[1].clip(0.01, 2.0);  // evita valori troppo bassi
+	~glideTime = val;
+	~notes.values.do { |s| s.set(\glideTime, val) };
+	("[OSC] Glide time aggiornato: " + val).postln;
+}, "/controller/glideTime");
+
 )
