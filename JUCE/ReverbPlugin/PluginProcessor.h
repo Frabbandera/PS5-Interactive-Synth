@@ -46,10 +46,9 @@ public:
 private:
     juce::Reverb reverb; 
     juce::Reverb::Parameters reverbParams; 
-    juce::AudioBuffer<float> preDelayBuffer;
-    int preDelayWritePos = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbPluginAudioProcessor)
 
 };
+
 
