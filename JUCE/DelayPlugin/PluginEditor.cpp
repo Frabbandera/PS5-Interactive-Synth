@@ -83,6 +83,7 @@ void DelayPluginAudioProcessorEditor::resized()
 
     auto area = getLocalBounds().reduced(40);
     auto knobArea = area.removeFromTop(200);
+    
     delayTimeSlider.setBounds(knobArea.removeFromLeft(100));
     feedbackSlider.setBounds(knobArea.removeFromLeft(100));
     mixSlider.setBounds(knobArea.removeFromLeft(100));
