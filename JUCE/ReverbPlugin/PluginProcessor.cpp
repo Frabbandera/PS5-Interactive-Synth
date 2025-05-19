@@ -16,7 +16,6 @@ ReverbPluginAudioProcessor::ReverbPluginAudioProcessor()
           std::make_unique<juce::AudioParameterFloat>("mix",       "Mix",       0.0f, 1.0f, 0.5f),
           std::make_unique<juce::AudioParameterFloat>("roomSize",  "Room Size", 0.0f, 1.0f, 0.5f),
           std::make_unique<juce::AudioParameterFloat>("damping",   "Damping",   0.0f, 1.0f, 0.5f),
-          std::make_unique<juce::AudioParameterFloat>("preDelay",  "Pre Delay", 0.0f, 0.2f, 0.0f)
       }) {}
 
 // 3. Definizione Distruttore
@@ -26,11 +25,6 @@ ReverbPluginAudioProcessor::~ReverbPluginAudioProcessor() {}
 void ReverbPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 
     reverb.setSampleRate(sampleRate);
-    int maxDelaySamples = static_cast<int>(0.2 * sampleRate);
-
-    preDelayBuffer.setSize(2, maxDelaySamples);
-    preDelayBuffer.clear();
-    preDelayWritePos = 0;
 
 }
 
@@ -58,41 +52,23 @@ void ReverbPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, 
     // 7.3 Lettura valori correnti dei parametri
     reverbParams.roomSize  = parameters.getRawParameterValue("roomSize")->load();
     reverbParams.damping   = parameters.getRawParameterValue("damping")->load();
-    reverbParams.wetLevel  = parameters.getRawParameterValue("mix")->load();
-    reverbParams.dryLevel  = 1.0f - reverbParams.wetLevel;
+    reverbParams.width = 1.0f;        // Espansione stereo
+    reverbParams.freezeMode = 0.0f;   // Lasciato a 0, ma potrebbe diventare interattivo
+    reverbParams.wetLevel = parameters.getRawParameterValue("mix")->load();
+    reverbParams.dryLevel = 1.0f;     // Mantieni sempre il dry, oppure rendilo parametrico
     reverbParams.freezeMode = 0.0f;
 
     // 7.4 Applicazione parametri aggiornati a JUCE
     reverb.setParameters(reverbParams); 
 
-    // 7.5 Conversione tempo di preDelay (ms -> #campioni)
-    float preDelayTime = parameters.getRawParameterValue("preDelay")->load();
-    int delaySamples = static_cast<int>(preDelayTime * getSampleRate());
-
-    // 7.6 Dimensioni Blocco
-    int bufferSize = buffer.getNumSamples();
-    int delayBufferSize = preDelayBuffer.getNumSamples();
-
-    // 7.7 Elaborazione per ogni canale (L/R)
-    for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
-    {
-
-        auto* input = buffer.getReadPointer(channel);
-        auto* output = buffer.getWritePointer(channel);
-        auto* delayData = preDelayBuffer.getWritePointer(channel);
-
-        // 7.7.1 ELaborazione per ogni campione
-        for (int i = 0; i < bufferSize; ++i)
-        {
-            int readPos = (preDelayWritePos + i - delaySamples + delayBufferSize) % delayBufferSize;
-            float delayedSample = delayData[readPos];
-            delayData[(preDelayWritePos + i) % delayBufferSize] = input[i];
-            output[i] = delayedSample;
-        }
-    }
-
-    preDelayWritePos = (preDelayWritePos + bufferSize) % delayBufferSize;
-
+   // 7.5 - 7.6 - 7.7
+    for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
+    auto* input = buffer.getReadPointer(channel);
+    auto* output = buffer.getWritePointer(channel);
+    juce::FloatVectorOperations::copy(output, input, buffer.getNumSamples());
+}
+    
+    
     // 7.8 Applicazione Riverbero
     reverb.processStereo(buffer.getWritePointer(0), buffer.getWritePointer(1), buffer.getNumSamples());
 
