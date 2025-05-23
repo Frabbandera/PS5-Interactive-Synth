@@ -5,10 +5,20 @@
 
 // 1.1 Inizializzazione MIDI
 MIDIClient.init;            // Inizializza il client MIDI di SuperCollider
-MIDIIn.connectAll;          // Collega tutti i dispositivi MIDI in ingresso disponibili
+MIDIIn.connectAll;
+
+~isMono = false;  // false = poly, true = mono
+
+// Collega tutti i dispositivi MIDI in ingresso disponibili
 
 // 1.2 Gestione nota ON
 ~noteOn = MIDIFunc.noteOn({ |vel, note, chan, src|
+
+	if (~isMono) {
+        // Se è attivo il mono, spegne tutte le note precedenti
+        ~notes.do({ |s| s.value.set(\gate, 0) });
+        ~notes.clear;
+    };
 
     ~notes[note] = Synth(\interactiveSynth, [       // Crea un nuovo Synth \interactiveSynth e lo memorizza nel dizionario
 
@@ -49,3 +59,4 @@ MIDIIn.connectAll;          // Collega tutti i dispositivi MIDI in ingresso disp
 
 });
 )
+
