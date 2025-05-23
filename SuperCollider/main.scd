@@ -10,7 +10,7 @@
 ~cutoff = 20000; ~lfoFreq = 0; ~lfoDepth = 0.5;                            // Parametri filtro e LFO
 ~sendLevel = 0.3; ~sendLevel2 = 0.3; ~sendLevel3 = 0.3; ~sendLevel4 = 0.3; // Livelli di invio ai bus FX
 ~attack = 0.01; ~decay = 0.3; ~sustain = 0.5; ~release = 0.3;              // Parametri ADSR dell'inviluppo
-~level1 = 0.3; ~level2 = 0.3; ~level3 = 0.3;                               // Volume individuale dei tre oscillatori
+~level1 = 0.3; ~level2 = 0.3; ~level3 = 0.3;                              // Volume individuale dei tre oscillatori
 ~notes = IdentityDictionary.new;                                           // Dizionario per tracciare le note attive (noteOn/noteOff)
 
 ~projectRoot = PathName(thisProcess.nowExecutingPath).pathOnly;         // Definizione del path progetto
