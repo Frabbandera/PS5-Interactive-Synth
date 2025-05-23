@@ -11,7 +11,7 @@ SynthDef(\interactiveSynth, {
     out = 0, fxSendBus1 = 0, fxSendBus2 = 0, fxSendBus3 = 0, fxSendBus4 = 0, sendLevel1 = 0.3, sendLevel2 = 0.2, sendLevel3 = 0.3, sendLevel4 = 0.2,
     octave1 = 0, octave2 = 0, octave3 = 0,
     level1 = 0.3, level2 = 0.3, level3 = 0.3,
-	glide = 1.0, glideTime = 0.1 |  // <-- nuovi parametri
+	glide = 1.0, glideTime = 0.2 |  // <-- nuovi parametri
 
     var sig1, sig2, sig3, sig, env, lfo, freqGlided;
 
