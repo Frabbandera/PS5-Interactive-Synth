@@ -46,7 +46,7 @@ OSCdef(\lfoFreqFromController, { |msg|
 // 1.1.2.1 Reverb Send Level (asse Y stick sinistro)
 OSCdef(\sendLevel1FromController, { |msg|
 
-    var newLevel = msg[1].clip(0, 1);                                     // Limita il valore tra 0 (niente) e 1 (max send)
+    var newLevel = msg[1].clip(0, 0.5);                                     // Limita il valore tra 0 (niente) e 1 (max send)
     ~sendLevel = newLevel;
     ~notes.values.do({ |synth| synth.set(\sendLevel1, ~sendLevel); });    // Aggiorna sendLevel1 (riverbero) su ogni synth attivo
 
@@ -148,7 +148,7 @@ OSCdef(\sendLevel3FromController, { |msg|
 // 1.1.2.4 Distortion Send Level (asse X stick destro)
 OSCdef(\sendLevel4FromController, { |msg|
 
-    var newLevel = msg[1].clip(0, 1);
+    var newLevel = msg[1].clip(0, 0.3);
     ~sendLevel4 = newLevel;
     ~notes.values.do({ |synth| synth.set(\sendLevel4, newLevel) });
 
@@ -365,5 +365,20 @@ OSCdef(\glideTimeFromController, { |msg|
 	~notes.values.do { |s| s.set(\glideTime, val) };
 	("[OSC] Glide time aggiornato: " + val).postln;
 }, "/controller/glideTime");
+
+
+// 1.2.5 Modalità MONO / POLY
+OSCdef(\monoModeFromGUI, { |msg|
+	var val = msg[1].asInteger.clip(0, 1);
+	~isMono = (val == 1);
+	("[OSC] Modalità MONO attivata? " ++ ~isMono).postln;
+}, "/controller/monoMode");
+
+OSCdef(\polyModeFromGUI, { |msg|
+	var val = msg[1].asInteger.clip(0, 1);
+	~isMono = (val == 0);  // L'opposto di mono
+	("[OSC] Modalità POLY attivata? " ++ (~isMono.not)).postln;
+}, "/controller/polyMode");
+
 
 )
