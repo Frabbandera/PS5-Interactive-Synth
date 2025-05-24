@@ -147,6 +147,57 @@ OSCdef(\sendLevel3FromController, { |msg|
 
 }, '/controller/sendLevel3');
 
+// === Parametri interni del plugin Flanger (GUI)
+
+// Dry/Wet
+OSCdef(\fdrywetFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~flangerPlugin.notNil) {
+		~flangerPlugin.set(0, val);
+		("[OSC] Flanger dry/wet → " + val).postln;
+	}
+}, "/controller/f_drywet");
+
+// Depth
+OSCdef(\fdepthFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~flangerPlugin.notNil) {
+		~flangerPlugin.set(1, val);
+		("[OSC] Flanger depth → " + val).postln;
+	}
+}, "/controller/f_depth");
+
+// Rate
+OSCdef(\frateFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~flangerPlugin.notNil) {
+		~flangerPlugin.set(2, val);
+		("[OSC] Flanger rate → " + val).postln;
+	}
+}, "/controller/f_rate");
+
+// Feedback
+OSCdef(\ffeedbackFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~flangerPlugin.notNil) {
+		~flangerPlugin.set(3, val);
+		("[OSC] Flanger feedback → " + val).postln;
+	}
+}, "/controller/f_feedback");
+
+// Amplitude
+OSCdef(\famplitudeFromGUI, { |msg|
+	var val = msg[1].clip(0, 1);
+	if(~flangerPlugin.notNil) {
+		~flangerPlugin.set(4, val);
+		("[OSC] Flanger amplitude → " + val).postln;
+	}
+}, "/controller/f_amplitude");
+
+
+
+
+
 // 1.1.2.4 Distortion Send Level (asse X stick destro)
 OSCdef(\sendLevel4FromController, { |msg|
 
@@ -374,12 +425,16 @@ OSCdef(\monoModeFromGUI, { |msg|
 	var val = msg[1].asInteger.clip(0, 1);
 	~isMono = (val == 1);
 	("[OSC] Modalità MONO attivata? " ++ ~isMono).postln;
+	~osc.sendMsg("/controller/monoMode", val);
+
 }, "/controller/monoMode");
 
 OSCdef(\polyModeFromGUI, { |msg|
 	var val = msg[1].asInteger.clip(0, 1);
 	~isMono = (val == 0);  // L'opposto di mono
 	("[OSC] Modalità POLY attivata? " ++ (~isMono.not)).postln;
+	~osc.sendMsg("/controller/polyMode", val);
+
 }, "/controller/polyMode");
 
 
@@ -493,7 +548,152 @@ OSCdef(\resetSynthParams, { |msg|
 
 }, "/controller/reset");
 
+
+
+
+// === 1.2.8 RANDOM FX ===
+OSCdef(\randomizeFXParams, { |msg|
+
+	"🎲 Randomizzazione parametri FX...".postln;
+
+	// --- REVERB (plugin param indices: 0 = Mix, 1 = Room Size, 2 = Damping, 3 = Pre Delay)
+	~reverbPlugin.notNil.if {
+		var mix = rrand(0.2, 1.0).round(0.01);
+		//var roomSize = rrand(0.4, 1.0).round(0.01);
+		var damping = rrand(0.1, 0.9).round(0.01);
+		var predelay = rrand(0.0, 1.0).round(0.01);
+		~reverbPlugin.set(0, mix);
+		//~reverbPlugin.set(1, roomSize);
+		~reverbPlugin.set(2, damping);
+		~reverbPlugin.set(3, predelay);
+		~osc.sendMsg("/controller/r_mix", mix);
+		//~osc.sendMsg("/controller/r_roomsize", roomSize);
+		~osc.sendMsg("/controller/r_damping", damping);
+		~osc.sendMsg("/controller/r_predelay", predelay);
+	};
+
+	// --- DELAY (plugin param indices: 0 = Time, 1 = Feedback, 2 = Mix)
+	~delayPlugin.notNil.if {
+		var time = rrand(0.1, 1.0).round(0.01);
+		//var fb = rrand(0.2, 0.95).round(0.01);
+		var mix = rrand(0.2, 1.0).round(0.01);
+		~delayPlugin.set(0, time);
+		//~delayPlugin.set(1, fb);
+		~delayPlugin.set(2, mix);
+		~osc.sendMsg("/controller/de_delaytime", time);
+		//~osc.sendMsg("/controller/de_feedback", fb);
+		~osc.sendMsg("/controller/de_mix", mix);
+	};
+
+	// --- FLANGER (plugin param indices: 0 = DryWet, 1 = Depth, 2 = Rate, 3 = Feedback, 4 = Amplitude)
+	~flangerPlugin.notNil.if {
+		var drywet = rrand(0.2, 1.0).round(0.01);
+		var depth = rrand(0.1, 1.0).round(0.01);
+		var rate = rrand(0.05, 0.6).round(0.01);
+		var fb = rrand(0.0, 0.95).round(0.01);
+		//var amp = rrand(0.3, 1.0).round(0.01);
+		~flangerPlugin.set(0, drywet);
+		~flangerPlugin.set(1, depth);
+		~flangerPlugin.set(2, rate);
+		~flangerPlugin.set(3, fb);
+		//~flangerPlugin.set(4, amp);
+		~osc.sendMsg("/controller/f_drywet", drywet);
+		~osc.sendMsg("/controller/f_depth", depth);
+		~osc.sendMsg("/controller/f_rate", rate);
+		~osc.sendMsg("/controller/f_feedback", fb);
+		//~osc.sendMsg("/controller/f_amplitude", amp);
+	};
+
+	// --- DISTORTION (plugin param indices: 0 = Drive, 1 = Tone, 2 = Mix, 3 = Output)
+	~distortionPlugin.notNil.if {
+		var drive = rrand(0.2, 1.0).round(0.01);
+		//var tone = rrand(0.1, 1.0).round(0.01);
+		var mix = rrand(0.3, 1.0).round(0.01);
+		var out = rrand(0.15, 0.5).round(0.01);
+		~distortionPlugin.set(0, drive);
+		//~distortionPlugin.set(1, tone);
+		~distortionPlugin.set(2, mix);
+		~distortionPlugin.set(3, out);
+		~osc.sendMsg("/controller/di_drive", drive);
+		//~osc.sendMsg("/controller/di_tone", tone);
+		~osc.sendMsg("/controller/di_mix", mix);
+		~osc.sendMsg("/controller/di_output", out);
+	};
+
+}, "/controller/randomizeFX");
+
+OSCdef(\resetFXParams, { |msg|
+
+	"🎲 Randomizzazione parametri FX...".postln;
+
+	// --- REVERB (plugin param indices: 0 = Mix, 1 = Room Size, 2 = Damping, 3 = Pre Delay)
+	~reverbPlugin.notNil.if {
+		var mix = 0.50;
+		//var roomSize = rrand(0.4, 1.0).round(0.01);
+		var damping = 0.50;
+		var predelay = 0.50;
+		~reverbPlugin.set(0, mix);
+		//~reverbPlugin.set(1, roomSize);
+		~reverbPlugin.set(2, damping);
+		~reverbPlugin.set(3, predelay);
+		~osc.sendMsg("/controller/r_mix", mix);
+		//~osc.sendMsg("/controller/r_roomsize", roomSize);
+		~osc.sendMsg("/controller/r_damping", damping);
+		~osc.sendMsg("/controller/r_predelay", predelay);
+	};
+
+	// --- DELAY (plugin param indices: 0 = Time, 1 = Feedback, 2 = Mix)
+	~delayPlugin.notNil.if {
+		var time = 0.50;
+		//var fb = rrand(0.2, 0.95).round(0.01);
+		var mix = 0.50;
+		~delayPlugin.set(0, time);
+		//~delayPlugin.set(1, fb);
+		~delayPlugin.set(2, mix);
+		~osc.sendMsg("/controller/de_delaytime", time);
+		//~osc.sendMsg("/controller/de_feedback", fb);
+		~osc.sendMsg("/controller/de_mix", mix);
+	};
+
+	// --- FLANGER (plugin param indices: 0 = DryWet, 1 = Depth, 2 = Rate, 3 = Feedback, 4 = Amplitude)
+	~flangerPlugin.notNil.if {
+		var drywet = 0.50;
+		var depth = 0.50;
+		var rate = 0.50;
+		var fb = 0.50;
+		//var amp = rrand(0.3, 1.0).round(0.01);
+		~flangerPlugin.set(0, drywet);
+		~flangerPlugin.set(1, depth);
+		~flangerPlugin.set(2, rate);
+		~flangerPlugin.set(3, fb);
+		//~flangerPlugin.set(4, amp);
+		~osc.sendMsg("/controller/f_drywet", drywet);
+		~osc.sendMsg("/controller/f_depth", depth);
+		~osc.sendMsg("/controller/f_rate", rate);
+		~osc.sendMsg("/controller/f_feedback", fb);
+		//~osc.sendMsg("/controller/f_amplitude", amp);
+	};
+
+	// --- DISTORTION (plugin param indices: 0 = Drive, 1 = Tone, 2 = Mix, 3 = Output)
+	~distortionPlugin.notNil.if {
+		var drive =0.50;
+		//var tone = rrand(0.1, 1.0).round(0.01);
+		var mix = 0.50;
+		var out = 0.50;
+		~distortionPlugin.set(0, drive);
+		//~distortionPlugin.set(1, tone);
+		~distortionPlugin.set(2, mix);
+		~distortionPlugin.set(3, out);
+		~osc.sendMsg("/controller/di_drive", drive);
+		//~osc.sendMsg("/controller/di_tone", tone);
+		~osc.sendMsg("/controller/di_mix", mix);
+		~osc.sendMsg("/controller/di_output", out);
+	};
+
+}, "/controller/resetFX");
+
 )
 
-// OSC DA MANDARE A PROCESSING
+
+
 
