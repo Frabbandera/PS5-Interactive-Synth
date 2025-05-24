@@ -26,6 +26,7 @@ time.sleep(2)
 
 # 3. Setup OSC (IP e porta di SuperCollider)
 client = SimpleUDPClient("127.0.0.1", 12000)
+sc_client = SimpleUDPClient("127.0.0.1", 57120)
 
 # 4. Mappatura pulsanti ed assi
 
@@ -61,6 +62,10 @@ glide = 1.0            # 1.0 = neutro, 2.0 = +1 ottava, 0.5 = -1 ottava
 glideTime = 0.2        # tempo del glide in secondi
 last_glide = None
 last_glideTime = None
+
+
+monoModeSent = False
+polyModeSent = False
 
 
 lfoFreq = 0.0
@@ -149,10 +154,7 @@ while True:
 
     now = time.time()
 
-    # === USCITA SICURA: PS + OPTIONS ===
-    if joystick.get_button(BUTTON_PS):
-        print("🛑 Combinazione di uscita rilevata. Termine script.")
-        break
+
 
     # 8.1 BUTTONS
 
@@ -197,16 +199,49 @@ while True:
 
     # 8.1.4 Modalità Mono/Poly
     if joystick.get_button(BUTTON_CIRCLE):
-        client.send_message("/controller/monoMode", 1)
-        #client.send_message("/controller/polyMode", 0)
+        
+        client.send_message("/controller/monoMode", 1.0)
+        client.send_message("/controller/polyMode", 0.0)
+
         print("🎚️ Modalità Mono selezionata")
-        #time.sleep(0.2)  # debounce
 
     elif joystick.get_button(BUTTON_SQUARE):
-        #client.send_message("/controller/monoMode", 0)
-        client.send_message("/controller/polyMode", 1)
+        client.send_message("/controller/monoMode", 0.0)
+        client.send_message("/controller/polyMode", 1.0)
+
         print("🎚️ Modalità Poly selezionata")
+
+
+
+    
+
+    # 8.1.5 Modalità RANDOM/RESET
+    if joystick.get_button(BUTTON_TRIANGLE):
+        client.send_message("/controller/randomize", 1.0)
+        
+        
+        #client.send_message("/controller/polyMode", 0)
+        print("🎚️ Modalità Random selezionata")
         #time.sleep(0.2)  # debounce
+
+    elif joystick.get_button(BUTTON_CROSS):
+        #client.send_message("/controller/monoMode", 0)
+        client.send_message("/controller/reset", 1.0)
+        
+        
+        print("🎚️ Modalità Reset selezionata")
+        #time.sleep(0.2)  # debounce
+
+    # 8.1.6 Random Fx
+
+    if joystick.get_button(BUTTON_PS):
+        client.send_message("/controller/randomizeFX", 1.0)
+        print("🎲 Randomizzazione parametri FX inviata")
+        #time.sleep(0.2)  # debounce per evitare invii multipli
+
+    elif joystick.get_button(BUTTON_MUTE):
+        client.send_message("/controller/resetFX", 1.0)
+        print("🎲 Reset parametri FX inviata")
 
 
     # 8.2 AXIS
@@ -262,8 +297,15 @@ while True:
     client.send_message("/controller/sendLevel3Raw", ry_raw)
 
     sendLevel3 = abs(ry_raw)
-    sent, last_sendLevel3 = send_if_changed("/controller/sendLevel3", sendLevel3, last_sendLevel3)
-    updated = updated or sent
+    sent5, last_sendLevel3 = send_if_changed("/controller/sendLevel3", sendLevel3, last_sendLevel3)
+    updated = updated or sent5
+
+    # Room size: 0.5 al centro, sale a 1.0 con ly = +1, scende a 0.0 con ly = -1
+    amplitude = 0.5 - (ry_raw * 0.5)
+    amplitude = max(0, min(1, amplitude))  # clip tra 0 e 1
+    sent6, _ = send_if_changed("/controller/f_amplitude", amplitude, None)
+
+    updated = updated or sent5 or sent6
 
 
 
@@ -287,4 +329,5 @@ while True:
         print(f"LFO: {lfoFreq:.2f}, lfoDepth: {lfoDepth:.2f}, Cutoff: {cutoff:.2f}, Reverb Send: {sendLevel1:.2f}, Room Size: {roomSize:.2f}, Delay: {sendLevel2:.2f}, DelayFeedback: {delayFeedback:.2f},Flanger: {sendLevel3:.2f}, Distortion: {sendLevel4:.2f}, DistortionTone: {distortionTone:.2f},")
 
     time.sleep(0.05)
+
 
