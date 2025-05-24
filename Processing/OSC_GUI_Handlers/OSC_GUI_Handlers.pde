@@ -5,6 +5,9 @@ import netP5.*;      // Gestione rete
 import oscP5.*;      // Gestione OSC
 import controlP5.*;  // Gestione GUI
 
+//logo
+PImage logoImage;
+
 // 1.2 Dichiarazione oggetti principali
 NetAddress sc;
 NetAddress py;
@@ -56,7 +59,8 @@ int lastR2Time = 0;
 
 // 1.4 Inizializzazione GUI
 void setup() {
-
+  
+  logoImage = loadImage("https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PlaySynth.png");
   size(1430, 820);
 
   // 1.4.1 Setup
@@ -369,7 +373,13 @@ void drawArrowLabel(float x, float y, int direction) {
   popMatrix();
 }
 
-
+String getWaveformName(int index) {
+  String[] waveNames = {"Sine", "Saw", "Square", "LFTri", "Blip"};
+  if (index >= 0 && index < waveNames.length) {
+    return waveNames[index];
+  }
+  return "Unknown";
+}
 
 // === 2. Funzioni Setup GUI ===
 
@@ -381,6 +391,7 @@ void setupOscillators() {
   String[] waveNames = {"Sine", "Saw", "Square", "LFTri", "Blip"};
 
   for (int i = 0; i < 3; i++) {
+    final int index = i;
     int y0 = 30 + i * 100;
 
     DropdownList d = cp5.addDropdownList("waveform" + (i + 1))
@@ -388,10 +399,24 @@ void setupOscillators() {
       .setSize(120, 80)
       .setItems(waveNames)
       .setGroup(oscGroup)
-      .setLabel("Wave " + (i + 1))
+      .setLabel("Wave " + (index + 1))
       .setColorBackground(color(235, 215, 140))   // giallo sabb
       .setColorForeground(color(180, 145, 60))    // ambra
       .setColorActive(color(180, 145, 60));
+      
+    cp5.addTextlabel("labelWaveform" + (i + 1))
+      .setText("Selected: —")
+      .setPosition(290, y0 - 15)
+      .setColorValue(color(60))
+      .setFont(createFont("Arial", 12));
+
+    d.onChange(new CallbackListener() {
+      public void controlEvent(CallbackEvent e) {
+        int idx = (int) e.getController().getValue();
+        cp5.get(Textlabel.class, "labelWaveform" + (index + 1))
+           .setText("Selected: " + getWaveformName(idx));
+      }
+    });
 
     // Aumenta altezza delle righe del menu
     d.setItemHeight(18);  // default è circa 20
@@ -1289,21 +1314,21 @@ void oscEvent(OscMessage m) {
     if (val == 1.0) {
     cp5.get(Toggle.class, "resetMode").setValue(1);
     cp5.get(Toggle.class, "randomMode").setValue(0);
-    sendOSC("/controller/reset", 1);// Disattiva l'altro
+    //sendOSC("/controller/reset", 1);// Disattiva l'altro
    }
    
    } else if (addr.equals("/controller/randomizeFX")) {
      if (val == 1.0) {
      cp5.get(Toggle.class, "resetFXMode").setValue(0);
      cp5.get(Toggle.class, "randomFXMode").setValue(1);
-     
+     }
    } else if (addr.equals("/controller/resetFX")) {
      if (val == 1.0) {
      cp5.get(Toggle.class, "randomFXMode").setValue(0);
      cp5.get(Toggle.class, "resetFXMode").setValue(1);
    }
    
-   }
+   
     
     
     
