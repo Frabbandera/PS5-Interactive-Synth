@@ -5,6 +5,9 @@ import netP5.*;      // Gestione rete
 import oscP5.*;      // Gestione OSC
 import controlP5.*;  // Gestione GUI
 
+// Logo
+PImage logoImage;
+
 // 1.2 Dichiarazione oggetti principali
 NetAddress sc;
 NetAddress py;
@@ -369,7 +372,13 @@ void drawArrowLabel(float x, float y, int direction) {
   popMatrix();
 }
 
-
+String getWaveformName(int index) {
+  String[] waveNames = {"Sine", "Saw", "Square", "LFTri", "Blip"};
+  if (index >= 0 && index < waveNames.length) {
+    return waveNames[index];
+  }
+  return "Unknown";
+}
 
 // === 2. Funzioni Setup GUI ===
 
@@ -383,18 +392,31 @@ void setupOscillators() {
   for (int i = 0; i < 3; i++) {
     int y0 = 30 + i * 100;
 
-    DropdownList d = cp5.addDropdownList("waveform" + (i + 1))
-      .setPosition(290, y0)          // 20 → 250
+     DropdownList d = cp5.addDropdownList("waveform" + (index + 1))
+      .setPosition(290, y0)
       .setSize(120, 80)
       .setItems(waveNames)
       .setGroup(oscGroup)
-      .setLabel("Wave " + (i + 1))
-      .setColorBackground(color(235, 215, 140))   // giallo sabb
-      .setColorForeground(color(180, 145, 60))    // ambra
+      .setLabel("Wave " + (index + 1))
+      .setColorBackground(color(235, 215, 140))
+      .setColorForeground(color(180, 145, 60))
       .setColorActive(color(180, 145, 60));
 
-    // Aumenta altezza delle righe del menu
-    d.setItemHeight(18);  // default è circa 20
+    cp5.addTextlabel("labelWaveform" + (index + 1))
+      .setText("Selected: —")
+      .setPosition(290, y0 - 15)
+      .setColorValue(color(60))
+      .setFont(createFont("Arial", 12));
+
+    d.onChange(new CallbackListener() {
+      public void controlEvent(CallbackEvent e) {
+        int idx = (int) e.getController().getValue();
+        cp5.get(Textlabel.class, "labelWaveform" + (index + 1))
+           .setText("Selected: " + getWaveformName(idx));
+      }
+    });
+
+    d.setItemHeight(18); 
     d.setBarHeight(18);   // altezza della barra visibile quando il menu è chiuso
 
     cp5.addKnob("level" + (i + 1))
@@ -1305,12 +1327,6 @@ void oscEvent(OscMessage m) {
    
    }
     
-    
-    
-    
-
-    
-
   // Joystick Simboli
   } else if (dist(mouseX, mouseY, symbolPadCenter.x, symbolPadCenter.y - 50) < 28) {
     trianglePressed = true;
