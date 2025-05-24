@@ -502,15 +502,15 @@ OSCdef(\resetSynthParams, { |msg|
 
 	"🔄 Reset parametri synth ai valori di default...".postln;
 
-	~waveform1 = 0;
-	~waveform2 = 1;
-	~waveform3 = 2;
+	~waveform1 = 0.0;
+	~waveform2 = 1.0;
+	~waveform3 = 2.0;
 
 	~attack = 0.01;
 	~decay = 0.3;
 	~sustain = 0.5;
 	~release = 0.3;
-	~cutoff = 20.00;
+	~cutoff = 10.00;
 	~lfoFreq = 0.0;
 	~lfoDepth = 0.0;
 
@@ -679,7 +679,7 @@ OSCdef(\resetFXParams, { |msg|
 		var drive =0.50;
 		//var tone = rrand(0.1, 1.0).round(0.01);
 		var mix = 0.50;
-		var out = 0.50;
+		var out = 0.30;
 		~distortionPlugin.set(0, drive);
 		//~distortionPlugin.set(1, tone);
 		~distortionPlugin.set(2, mix);
@@ -693,6 +693,9 @@ OSCdef(\resetFXParams, { |msg|
 }, "/controller/resetFX");
 
 )
+
+
+
 
 
 
