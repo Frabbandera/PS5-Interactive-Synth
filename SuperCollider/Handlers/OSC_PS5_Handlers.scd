@@ -444,9 +444,9 @@ OSCdef(\randomizeSynthParams, { |msg|
 
 	"🎲 Randomizzazione parametri synth...".postln;
 
-	~waveform1 = (~waveformNames.size.rand).clip(0, ~waveformNames.size - 1);
-	~waveform2 = (~waveformNames.size.rand).clip(0, ~waveformNames.size - 1);
-	~waveform3 = (~waveformNames.size.rand).clip(0, ~waveformNames.size - 1);
+	~waveform1 = (~waveformNames.size.rand).clip(0, ~waveformNames.size - 1.0);
+	~waveform2 = (~waveformNames.size.rand).clip(0, ~waveformNames.size - 1.0);
+	~waveform3 = (~waveformNames.size.rand).clip(0, ~waveformNames.size - 1.0);
 
 	~attack = rrand(0.005, 5.0).round(0.001);
 	~decay = rrand(0.1, 5.0).round(0.01);
