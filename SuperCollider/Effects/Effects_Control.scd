@@ -15,8 +15,13 @@
 ~delayPlugin = VSTPluginController(~fxDelay, id: \delayplugin);
 ~delayPlugin.open(~delayPluginPath, editor: true, verbose: true);
 
-// 1.3 FX Flanger (SC)
-~fxFlanger = Synth(\flangerFX, [\inBus, ~fxBus3, \out, 0.5], ~fxGroup);
+// 1.3 FX Flanger (JUCE)
+//~fxFlanger = Synth(\flangerFX, [\inBus, ~fxBus3, \out, 0.5], ~fxGroup);
+
+~fxFlanger = Synth(\flangerPluginFX, [\inBus, ~fxBus3, \out, 0.5], ~fxGroup);
+~flangerPluginPath = "C:/Program Files/Common Files/VST3/FlangerPlugin.vst3";
+~flangerPlugin = VSTPluginController(~fxFlanger, id: \flangerplugin);
+~flangerPlugin.open(~flangerPluginPath, editor: true, verbose: true);
 
 // 1.4 FX Distortion (JUCE)
 ~fxDistortion = Synth(\distortionPluginFX, [\inBus, ~fxBus4, \out, 0.5], ~fxGroup);
