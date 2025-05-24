@@ -50,5 +50,6 @@ s.waitForBoot {
 
 ~reverbPlugin.editor;
 ~delayPlugin.editor;
+~flangerPlugin.editor;
 ~distortionPlugin.editor;
 )
