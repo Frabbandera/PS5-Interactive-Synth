@@ -1,6 +1,8 @@
 // === OSC_PS5_HANDLERS.SCD ===
 
 (
+
+~osc = NetAddr("127.0.0.1", 12000);
 // === 1. Handling Processing's OSC Messages: aggiornamento in tempo reale dei parametri del synth in risposta all'interazione utente con controller PS5 e/o GUI Processing ===
 
 // 1.1 Controller PS5
@@ -381,4 +383,117 @@ OSCdef(\polyModeFromGUI, { |msg|
 }, "/controller/polyMode");
 
 
+// 1.2.6 RANDOM
+
+OSCdef(\randomizeSynthParams, { |msg|
+
+	"🎲 Randomizzazione parametri synth...".postln;
+
+	~waveform1 = (~waveformNames.size.rand).clip(0, ~waveformNames.size - 1);
+	~waveform2 = (~waveformNames.size.rand).clip(0, ~waveformNames.size - 1);
+	~waveform3 = (~waveformNames.size.rand).clip(0, ~waveformNames.size - 1);
+
+	~attack = rrand(0.005, 5.0).round(0.001);
+	~decay = rrand(0.1, 5.0).round(0.01);
+	~sustain = rrand(0.3, 1.0).round(0.01);
+	~release = rrand(0.1, 5.0).round(0.01);
+	~cutoff = rrand(0.2, 20);
+	~lfoFreq = rrand(0.1, 10.0).round(0.1);
+	~lfoDepth = rrand(0.0, 1.0).round(0.01);
+
+	"→ waveforms: % | % | %".format(
+		~waveformNames[~waveform1],
+		~waveformNames[~waveform2],
+		~waveformNames[~waveform3]
+	).postln;
+
+	("→ ADSR: A %.3f D %.3f S %.3f R %.3f".format(~attack, ~decay, ~sustain, ~release)).postln;
+	("→ LFO: freq %.2fHz depth %.2f | LPF cutoff: %.1fHz".format(~lfoFreq, ~lfoDepth, ~cutoff)).postln;
+
+	// Aggiorna i synth attivi
+	~notes.values.do({ |s|
+		s.set(
+			\waveform1, ~waveform1,
+			\waveform2, ~waveform2,
+			\waveform3, ~waveform3,
+			\attack, ~attack,
+			\decay, ~decay,
+			\sustain, ~sustain,
+			\release, ~release,
+			\cutoff, ~cutoff,
+			\lfoFreq, ~lfoFreq,
+			\lfoDepth, ~lfoDepth
+		);
+	});
+
+~osc.sendMsg("/controller/waveform1", ~waveform1);
+~osc.sendMsg("/controller/waveform2", ~waveform2);
+~osc.sendMsg("/controller/waveform3", ~waveform3);
+
+~osc.sendMsg("/controller/attack", ~attack);
+~osc.sendMsg("/controller/decay", ~decay);
+~osc.sendMsg("/controller/sustain", ~sustain);
+~osc.sendMsg("/controller/release", ~release);
+
+~osc.sendMsg("/controller/cutoff", ~cutoff);
+~osc.sendMsg("/controller/lfoFreq", ~lfoFreq);
+~osc.sendMsg("/controller/lfoDepth", ~lfoDepth);
+
+}, "/controller/randomize");
+
+// 1.2.7 RESET
+
+OSCdef(\resetSynthParams, { |msg|
+
+	"🔄 Reset parametri synth ai valori di default...".postln;
+
+	~waveform1 = 0;
+	~waveform2 = 1;
+	~waveform3 = 2;
+
+	~attack = 0.01;
+	~decay = 0.3;
+	~sustain = 0.5;
+	~release = 0.3;
+	~cutoff = 20.00;
+	~lfoFreq = 0.0;
+	~lfoDepth = 0.0;
+
+	("→ waveform1/2/3 reset a: " ++ ~waveformNames[0]).postln;
+	("→ ADSR: A %.3f D %.3f S %.3f R %.3f".format(~attack, ~decay, ~sustain, ~release)).postln;
+	("→ LFO: freq %.2fHz depth %.2f | LPF cutoff: %.1fHz".format(~lfoFreq, ~lfoDepth, ~cutoff)).postln;
+
+	~notes.values.do({ |s|
+		s.set(
+			\waveform1, ~waveform1,
+			\waveform2, ~waveform2,
+			\waveform3, ~waveform3,
+			\attack, ~attack,
+			\decay, ~decay,
+			\sustain, ~sustain,
+			\release, ~release,
+			\cutoff, ~cutoff,
+			\lfoFreq, ~lfoFreq,
+			\lfoDepth, ~lfoDepth
+		);
+	});
+
+~osc.sendMsg("/controller/waveform1", ~waveform1);
+~osc.sendMsg("/controller/waveform2", ~waveform2);
+~osc.sendMsg("/controller/waveform3", ~waveform3);
+
+~osc.sendMsg("/controller/attack", ~attack);
+~osc.sendMsg("/controller/decay", ~decay);
+~osc.sendMsg("/controller/sustain", ~sustain);
+~osc.sendMsg("/controller/release", ~release);
+
+~osc.sendMsg("/controller/cutoff", ~cutoff);
+~osc.sendMsg("/controller/lfoFreq", ~lfoFreq);
+~osc.sendMsg("/controller/lfoDepth", ~lfoDepth);
+
+}, "/controller/reset");
+
 )
+
+// OSC DA MANDARE A PROCESSING
+
