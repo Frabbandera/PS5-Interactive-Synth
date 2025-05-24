@@ -1,3 +1,4 @@
+
 // === EFFECTS_DEFINITION.SCD ===
 
 (
@@ -23,8 +24,17 @@ SynthDef(\simpleFXDelay, {
 
 }).add;
 
-// 1.3 FX Flanger (JUCE)
+// 1.2 FX Flanger (JUCE)
+SynthDef(\flangerFX, {
+
+	|inBus = 0, out = 0|
+    var in = In.ar(inBus, 2);
+    var wet = VSTPlugin.ar(in, 2, id: \flangerplugin);
+    Out.ar(out, wet);
+
+}).add;
 /*
+// 1.3 FX Flanger (SC)
 SynthDef(\flangerFX, {
 
     |inBus = 0, out = 0|
@@ -35,17 +45,7 @@ SynthDef(\flangerFX, {
     var wetR = DelayC.ar(in[1], 0.01, modR);
     Out.ar(out, [wetL, wetR]);
 
-}).add;
-*/
-
-SynthDef(\flangerPluginFX, {
-
-	|inBus = 0, out = 0|
-    var in = In.ar(inBus, 2);
-    var wet = VSTPlugin.ar(in, 2, id: \flangerplugin);
-    Out.ar(out, wet);
-
-}).add;
+}).add;*/
 
 // 1.4 FX Distortion (JUCE)
 SynthDef(\distortionPluginFX, {
