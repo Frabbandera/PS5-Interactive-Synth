@@ -71,10 +71,10 @@ void setup() {
   setupModulation();
   setupFX();
   
-  // 1.4.3 XY-Pads
-   leftPadCenter  = new PVector( 60 + padRadius, 450 + padRadius );   
-   rightPadCenter = new PVector(width - (120 + padRadius), 450 + padRadius );
-  
+ // 1.4.3 XY-Pads - Centrati visivamente
+leftPadCenter  = new PVector( 120 + padRadius, 450 + padRadius );               // Spostato più a destra
+rightPadCenter = new PVector(width - (170 + padRadius), 450 + padRadius );    // Spostato più a sinistra
+
   // 1.4.4 Font
   PFont uiFont = createFont("Futura-Bold", 12);  
   textFont(uiFont);
@@ -113,28 +113,35 @@ void draw() {
   // FX
   fill(170, 220, 170);
   noStroke();
-  rect(10, 400, 1400, 410, 20);
+  rect(90, 400, 1200, 390, 20);
   fill(0);
 
-  // XY-PADS
-  noFill();
-  stroke( 0, 100 );
-  strokeWeight(2);
-  
-  // left
-  ellipse( leftPadCenter.x, leftPadCenter.y, padRadius*2, padRadius*2 );
-  fill(0);
-  ellipse( leftPadCenter.x + leftPadX*padRadius,
-           leftPadCenter.y + leftPadY*padRadius,
-           16, 16 );
-  // right
-  noFill();
-  stroke( 0, 100 );
-  ellipse( rightPadCenter.x, rightPadCenter.y, padRadius*2, padRadius*2 );
-  fill(0);
-  ellipse( rightPadCenter.x + rightPadX*padRadius,
-         rightPadCenter.y + rightPadY*padRadius,
-         16, 16 );
+// === XY-PADS ottimizzati ===
+color knobColor = color(120, 180, 140); // lo stesso di .setColorBackground
+// === XY-PADS ottimizzati ===
+
+// LEFT PAD
+noStroke(); // Rimuove il contorno
+fill(knobColor);
+ellipse(leftPadCenter.x, leftPadCenter.y, padRadius*2, padRadius*2);
+
+// Punto di controllo centrale (nero)
+fill(0);
+ellipse(leftPadCenter.x + leftPadX*padRadius,
+        leftPadCenter.y + leftPadY*padRadius,
+        16, 16);
+
+// RIGHT PAD
+noStroke(); // Rimuove il contorno
+fill(knobColor);
+ellipse(rightPadCenter.x, rightPadCenter.y, padRadius*2, padRadius*2);
+
+// Punto di controllo centrale (nero)
+fill(0);
+ellipse(rightPadCenter.x + rightPadX*padRadius,
+        rightPadCenter.y + rightPadY*padRadius,
+        16, 16);
+
 
   // PADS frecce e simboli
   drawJoystickCircle(dpadCenter, 90);  
@@ -431,26 +438,68 @@ void setupOscillators() {
     .setColorActive(color(180, 145, 60))
     .getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(-35);
     
-   // MONO POLY
-   cp5.addToggle("monoMode")
-    .setPosition(1230, 60)  // a sinistra sopra il cerchio
-    .setSize(60, 20)
-    .setValue(true)
-    .setGroup(oscGroup)
-    .setLabel("Mono")
-    .setColorForeground(color(180, 145, 60))
-    .setColorActive(color(100, 180, 100))
-    .setColorBackground(color(230));
+// POLY a sinistra → spostato a destra
+cp5.addToggle("polyMode")
+  .setPosition(1220, 60)  // prima era 1200
+  .setSize(60, 20)
+  .setValue(false)
+  .setGroup(oscGroup)
+  .setLabel("Poly")
+  .setColorForeground(color(180, 145, 60))
+  .setColorActive(color(250, 230, 100))    // giallo pastello
+  .setColorBackground(color(230));
 
-  cp5.addToggle("polyMode")
-    .setPosition(1300, 60)  // a destra sopra il quadrato
-    .setSize(60, 20)
-    .setValue(false)
-    .setGroup(oscGroup)
-    .setLabel("Poly")
-    .setColorForeground(color(180, 145, 60))
-    .setColorActive(color(100, 180, 100))
-    .setColorBackground(color(230));
+// MONO a destra → spostato a destra
+cp5.addToggle("monoMode")
+  .setPosition(1300, 60)  // prima era 1270
+  .setSize(60, 20)
+  .setValue(true)
+  .setGroup(oscGroup)
+  .setLabel("Mono")
+  .setColorForeground(color(180, 145, 60))
+  .setColorActive(color(255, 100, 100))    // rosso pastello
+  .setColorBackground(color(230));
+
+// Etichette centrate in basso
+cp5.getController("monoMode").getCaptionLabel()
+   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+   .setColor(color(255, 100, 100));
+
+cp5.getController("polyMode").getCaptionLabel()
+   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+   .setColor(color(250, 230, 100));
+   
+ // RANDOM a sinistra (sotto triangolo)
+cp5.addToggle("randomMode")
+  .setPosition(1220, 310)   // simmetrico verticale rispetto a polyMode
+  .setSize(60, 20)
+  .setValue(false)
+  .setGroup(oscGroup)
+  .setLabel("Random")
+  .setColorForeground(color(60, 180, 100))
+  .setColorActive(color(100, 190, 100))    // verde pastello
+  .setColorBackground(color(230));
+
+// RESET a destra (sotto croce)
+cp5.addToggle("resetMode")
+  .setPosition(1300, 310)   // simmetrico verticale rispetto a monoMode
+  .setSize(60, 20)
+  .setValue(false)
+  .setGroup(oscGroup)
+  .setLabel("Reset")
+  .setColorForeground(color(140, 100, 180))
+  .setColorActive(color(170, 140, 200))    // viola pastello
+  .setColorBackground(color(230));
+
+  cp5.getController("randomMode").getCaptionLabel()
+   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+   .setColor(color(100, 190, 100)); // verde pastello
+
+cp5.getController("resetMode").getCaptionLabel()
+   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+   .setColor(color(170, 140, 200)); // viola pastello
+
+
 }
 
 // 2.2 Envelope
@@ -835,14 +884,20 @@ void mousePressed() {
   float sy = symbolPadCenter.y;
 
   // Joystick Simboli cliccabili precisi
-  if (dist(mouseX, mouseY, sx, sy - 60) < 30) {         // Triangolo
-    trianglePressed = true;
-    sendOSC("/controller/buttonTriangle", 1);
-  }
-  if (dist(mouseX, mouseY, sx, sy + 60) < 30) {         // Croce
-    crossPressed = true;
-    sendOSC("/controller/buttonCross", 1);
-  }
+if (dist(mouseX, mouseY, sx, sy - 60) < 30) {  // Triangolo
+  trianglePressed = true;
+  cp5.get(Toggle.class, "randomMode").setValue(1);
+    cp5.get(Toggle.class, "resetMode").setValue(0);
+  sendOSC("/controller/randomize", 1);
+}
+
+if (dist(mouseX, mouseY, sx, sy + 60) < 30) {  // Croce
+  crossPressed = true;
+  cp5.get(Toggle.class, "resetMode").setValue(1);
+    cp5.get(Toggle.class, "randomMode").setValue(0);
+  sendOSC("/controller/reset", 1);
+}
+
   if (dist(mouseX, mouseY, sx - 60, sy) < 30) {         // Quadrato
     squarePressed = true;
     cp5.get(Toggle.class, "polyMode").setValue(1);
@@ -1014,15 +1069,24 @@ void controlEvent(ControlEvent e) {
   } else if (name.equals("polyMode") && val == 1) {
     cp5.get(Toggle.class, "monoMode").setValue(0); // Disattiva il toggle opposto
     sendOSC("/controller/polyMode", 1);         // Attiva modalità poly
+  
+      // 4.2.9 RANDOM RESET
+      
+  } else if (name.equals("randomMode") && val == 1) {
+    cp5.get(Toggle.class, "resetMode").setValue(0); 
+    sendOSC("/controller/randomize", 1);         
+  } else if (name.equals("resetMode") && val == 1) {
+    cp5.get(Toggle.class, "randomMode").setValue(0); 
+    sendOSC("/controller/reset", 1); 
   }
+    
+
+ 
 }
 
 
 // === 5. Ricezione OSC ===
 void oscEvent(OscMessage m) {
-  
-  println("Ricevuto OSC:", m.addrPattern(), m.get(0).floatValue());
-
 
   String addr = m.addrPattern();
   float val = m.get(0).floatValue();
@@ -1123,21 +1187,15 @@ void oscEvent(OscMessage m) {
     glide_dir = -1;
     lastGlidePressTime = millis();
     
-    // MONO POLY
-    
+    // 5.8 Modalità Mono / Poly
   } else if (addr.equals("/controller/monoMode")) {
-    boolean valBool = (val != 0);
-    cp5.get(Toggle.class, "monoMode").setValue(valBool ? 1 : 0);
-    cp5.get(Toggle.class, "polyMode").setValue(0);
+    cp5.get(Toggle.class, "monoMode").setValue(val);
+    cp5.get(Toggle.class, "polyMode").setValue(0);  // Disattiva l'altro
   } else if (addr.equals("/controller/polyMode")) {
-    boolean valBool = (val != 0);
-    cp5.get(Toggle.class, "polyMode").setValue(valBool ? 1 : 0);
-    cp5.get(Toggle.class, "monoMode").setValue(0);
-}
+    cp5.get(Toggle.class, "polyMode").setValue(val);
+    cp5.get(Toggle.class, "monoMode").setValue(0);  // Disattiva l'altro
+  }
 
-
-
- 
   // Joystick Simboli
   if (dist(mouseX, mouseY, symbolPadCenter.x, symbolPadCenter.y - 50) < 28) {
     trianglePressed = true;
