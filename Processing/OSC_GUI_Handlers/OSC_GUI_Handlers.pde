@@ -479,6 +479,22 @@ cp5.addToggle("randomMode")
   .setColorForeground(color(60, 180, 100))
   .setColorActive(color(100, 190, 100))    // verde pastello
   .setColorBackground(color(230));
+  
+  // RANDOM FX (accanto a Random Synth)
+cp5.addToggle("randomFXMode")
+  .setPosition(1220, 340)   // sotto "Random Synth"
+  .setSize(60, 20)
+  .setValue(false)
+  .setGroup(oscGroup)
+  .setLabel("randomFX")
+  .setColorForeground(color(60, 180, 100))
+  .setColorActive(color(100, 190, 100))    // verde pastello
+  .setColorBackground(color(230));
+
+cp5.getController("randomFXMode").getCaptionLabel()
+   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+   .setColor(color(100, 190, 100)); // verde pastello
+
 
 // RESET a destra (sotto croce)
 cp5.addToggle("resetMode")
@@ -490,6 +506,21 @@ cp5.addToggle("resetMode")
   .setColorForeground(color(140, 100, 180))
   .setColorActive(color(170, 140, 200))    // viola pastello
   .setColorBackground(color(230));
+  
+  // RESET a destra (sotto croce)
+cp5.addToggle("resetFXMode")
+  .setPosition(1300, 340)   // simmetrico verticale rispetto a monoMode
+  .setSize(60, 20)
+  .setValue(false)
+  .setGroup(oscGroup)
+  .setLabel("ResetFX")
+  .setColorForeground(color(140, 100, 180))
+  .setColorActive(color(170, 140, 200))    // viola pastello
+  .setColorBackground(color(230));
+  
+  cp5.getController("resetFXMode").getCaptionLabel()
+   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+   .setColor(color(170, 140, 200)); // viola pastello
 
   cp5.getController("randomMode").getCaptionLabel()
    .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
@@ -668,7 +699,7 @@ cp5.getController("FX4").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
   cp5.addKnob("de_delaytime")
     .setPosition(475, 650)
     .setRadius(25)
-    .setRange(0, 1)
+    .setRange(0,1)
     .setValue(0)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
@@ -716,7 +747,7 @@ cp5.getController("FX4").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setColorActive(color(20, 100, 20));
 cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE); // ✅ etichetta sopra
 
-  cp5.addKnob("f_rate")
+  cp5.addKnob("f_drywet")
     .setPosition(735, 445)
     .setRadius(25)
     .setRange(0, 1)
@@ -727,7 +758,7 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setColorActive(color(20, 100, 20))
     .setDragDirection(ControlP5.VERTICAL)
     .setResolution(-100)
-    .setLabel("Rate");
+    .setLabel("Dry/Wet");
 
   cp5.addKnob("f_depth")
     .setPosition(800, 445)
@@ -742,7 +773,7 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setResolution(-100)
     .setLabel("Depth");
 
-  cp5.addKnob("f_delay")
+  cp5.addKnob("f_rate")
     .setPosition(865, 445)
     .setRadius(25)
     .setRange(0, 1)
@@ -753,7 +784,7 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setColorActive(color(20, 100, 20))
     .setDragDirection(ControlP5.VERTICAL)
     .setResolution(-100)
-    .setLabel("Delay");
+    .setLabel("Rate");
 
   cp5.addKnob("f_feedback")
     .setPosition(767, 515)
@@ -768,7 +799,7 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setResolution(-100)
     .setLabel("Feedback");
 
-  cp5.addKnob("f_mix")
+  cp5.addKnob("f_amplitude")
     .setPosition(833, 515)
     .setRadius(25)
     .setRange(0, 1)
@@ -779,7 +810,7 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setColorActive(color(20, 100, 20))
     .setDragDirection(ControlP5.VERTICAL)
     .setResolution(-100)
-    .setLabel("Mix");
+    .setLabel("Amplitude");
 
   cp5.addSlider("FX7")
     .setPosition(735, 620)
@@ -887,14 +918,14 @@ void mousePressed() {
 if (dist(mouseX, mouseY, sx, sy - 60) < 30) {  // Triangolo
   trianglePressed = true;
   cp5.get(Toggle.class, "randomMode").setValue(1);
-    cp5.get(Toggle.class, "resetMode").setValue(0);
+  cp5.get(Toggle.class, "resetMode").setValue(0);
   sendOSC("/controller/randomize", 1);
 }
 
 if (dist(mouseX, mouseY, sx, sy + 60) < 30) {  // Croce
   crossPressed = true;
   cp5.get(Toggle.class, "resetMode").setValue(1);
-    cp5.get(Toggle.class, "randomMode").setValue(0);
+  cp5.get(Toggle.class, "randomMode").setValue(0);
   sendOSC("/controller/reset", 1);
 }
 
@@ -1024,6 +1055,16 @@ void controlEvent(ControlEvent e) {
     sendOSC("/controller/de_mix", val);
   } else if (name.equals("FX6")) {
     sendOSC("/controller/sendLevel3", val);
+  } else if (name.equals("f_drywet")) {
+    sendOSC("/controller/f_drywet", val);
+  } else if (name.equals("f_depth")) {
+    sendOSC("/controller/f_depth", val);
+  } else if (name.equals("f_rate")) {
+    sendOSC("/controller/f_rate", val);
+  } else if (name.equals("f_feedback")) {
+    sendOSC("/controller/f_feedback", val);
+  } else if (name.equals("f_amplitude")) {
+    sendOSC("/controller/f_amplitude", val);
   } else if (name.equals("FX7")) {
     sendOSC("/controller/sendLevel4", val);
   } else if (name.equals("di_drive")) {
@@ -1070,7 +1111,7 @@ void controlEvent(ControlEvent e) {
     cp5.get(Toggle.class, "monoMode").setValue(0); // Disattiva il toggle opposto
     sendOSC("/controller/polyMode", 1);         // Attiva modalità poly
   
-      // 4.2.9 RANDOM RESET
+      // 4.2.9 RANDOM RESET synth
       
   } else if (name.equals("randomMode") && val == 1) {
     cp5.get(Toggle.class, "resetMode").setValue(0); 
@@ -1079,10 +1120,23 @@ void controlEvent(ControlEvent e) {
     cp5.get(Toggle.class, "randomMode").setValue(0); 
     sendOSC("/controller/reset", 1); 
   }
+  
+  // 4.2.10 Random e reset fx
+  
+    else if (name.equals("randomFXMode") && val == 1) {
+    cp5.get(Toggle.class, "resetFXMode").setValue(0);
+    sendOSC("/controller/randomizeFX", 1);
+  } else if (name.equals("resetFXMode") && val == 1) {
+    cp5.get(Toggle.class, "randomFXMode").setValue(0); 
+    sendOSC("/controller/resetFX", 1); 
+  }
+    
+}
+
     
 
  
-}
+
 
 
 // === 5. Ricezione OSC ===
@@ -1119,6 +1173,12 @@ void oscEvent(OscMessage m) {
     
   } else if (addr.equals("/controller/r_roomsize")) {
     cp5.get(Knob.class, "r_roomsize").setValue(val);
+  } else if (addr.equals("/controller/r_mix")) {
+    cp5.get(Knob.class, "r_mix").setValue(val);
+  } else if (addr.equals("/controller/r_damping")) {
+    cp5.get(Knob.class, "r_damping").setValue(val);
+  } else if (addr.equals("/controller/r_predelay")) {
+    cp5.get(Knob.class, "r_predelay").setValue(val);
     
   } else if (addr.equals("/controller/sendLevel2Raw")) {
     leftPadX = val;
@@ -1127,12 +1187,26 @@ void oscEvent(OscMessage m) {
     cp5.get(Slider.class, "FX4").setValue(val);
   } else if (addr.equals("/controller/de_feedback")) {
     cp5.get(Knob.class, "de_feedback").setValue(val);
+  } else if (addr.equals("/controller/de_delaytime")) {
+    cp5.get(Knob.class, "de_delaytime").setValue(val);
+  } else if (addr.equals("/controller/de_mix")) {
+    cp5.get(Knob.class, "de_mix").setValue(val);
     
   } else if (addr.equals("/controller/sendLevel3Raw")) {
     rightPadY = val;
     cp5.get(Slider.class, "FX6").setValue(abs(val));
   } else if (addr.equals("/controller/sendLevel3")) {
     cp5.get(Slider.class, "FX6").setValue(val);
+  } else if (addr.equals("/controller/f_amplitude")) {
+    cp5.get(Knob.class, "f_amplitude").setValue(val);
+      } else if (addr.equals("/controller/f_drywet")) {
+    cp5.get(Knob.class, "f_drywet").setValue(val);
+      } else if (addr.equals("/controller/f_depth")) {
+    cp5.get(Knob.class, "f_depth").setValue(val);
+      } else if (addr.equals("/controller/f_rate")) {
+    cp5.get(Knob.class, "f_rate").setValue(val);
+      } else if (addr.equals("/controller/f_feedback")) {
+    cp5.get(Knob.class, "f_feedback").setValue(val);
     
   } else if (addr.equals("/controller/sendLevel4Raw")) {
     rightPadX = val;
@@ -1141,6 +1215,12 @@ void oscEvent(OscMessage m) {
     cp5.get(Slider.class, "FX7").setValue(val);
   } else if (addr.equals("/controller/di_tone")) {
     cp5.get(Knob.class, "di_tone").setValue(val);
+      } else if (addr.equals("/controller/di_drive")) {
+    cp5.get(Knob.class, "di_drive").setValue(val);
+      } else if (addr.equals("/controller/di_mix")) {
+    cp5.get(Knob.class, "di_mix").setValue(val);
+      } else if (addr.equals("/controller/di_output")) {
+    cp5.get(Knob.class, "di_output").setValue(val);
     
     // 5.4 Waveforms Levels
   } else if (addr.equals("/controller/level1")) {
@@ -1189,15 +1269,50 @@ void oscEvent(OscMessage m) {
     
     // 5.8 Modalità Mono / Poly
   } else if (addr.equals("/controller/monoMode")) {
-    cp5.get(Toggle.class, "monoMode").setValue(val);
+    if (val==1.0) {
+    cp5.get(Toggle.class, "monoMode").setValue(1);
     cp5.get(Toggle.class, "polyMode").setValue(0);  // Disattiva l'altro
+    }
   } else if (addr.equals("/controller/polyMode")) {
-    cp5.get(Toggle.class, "polyMode").setValue(val);
-    cp5.get(Toggle.class, "monoMode").setValue(0);  // Disattiva l'altro
-  }
+    if (val == 1.0) {
+    cp5.get(Toggle.class, "polyMode").setValue(1);
+    cp5.get(Toggle.class, "monoMode").setValue(0);// Disattiva l'altro
+    }
+    
+    // 5.8 Modalità Random / Reset sintesi
+  } else if (addr.equals("/controller/randomize")) {
+    if (val==1.0) {
+    cp5.get(Toggle.class, "randomMode").setValue(1);
+    cp5.get(Toggle.class, "resetMode").setValue(0);  // Disattiva l'altro
+    }
+  } else if (addr.equals("/controller/reset")) {
+    if (val == 1.0) {
+    cp5.get(Toggle.class, "resetMode").setValue(1);
+    cp5.get(Toggle.class, "randomMode").setValue(0);
+    sendOSC("/controller/reset", 1);// Disattiva l'altro
+   }
+   
+   } else if (addr.equals("/controller/randomizeFX")) {
+     if (val == 1.0) {
+     cp5.get(Toggle.class, "resetFXMode").setValue(0);
+     cp5.get(Toggle.class, "randomFXMode").setValue(1);
+     
+   } else if (addr.equals("/controller/resetFX")) {
+     if (val == 1.0) {
+     cp5.get(Toggle.class, "randomFXMode").setValue(0);
+     cp5.get(Toggle.class, "resetFXMode").setValue(1);
+   }
+   
+   }
+    
+    
+    
+    
+
+    
 
   // Joystick Simboli
-  if (dist(mouseX, mouseY, symbolPadCenter.x, symbolPadCenter.y - 50) < 28) {
+  } else if (dist(mouseX, mouseY, symbolPadCenter.x, symbolPadCenter.y - 50) < 28) {
     trianglePressed = true;
     sendOSC("/controller/buttonTriangle", 1);
   } else if (dist(mouseX, mouseY, symbolPadCenter.x, symbolPadCenter.y + 50) < 28) {
