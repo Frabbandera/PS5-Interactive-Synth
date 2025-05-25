@@ -411,6 +411,15 @@ OSCdef(\glideFromController, { |msg|
 	("[OSC] Glide factor aggiornato: " + val).postln;
 }, "/controller/glide");
 
+// 1.1.3.2 Glide Time (quanto ci mette a scivolare)
+OSCdef(\glideTimeFromController, { |msg|
+	var val = msg[1].clip(0.01, 2.0);  // evita valori troppo bassi
+	~glideTime = val;
+	~notes.values.do { |s| s.set(\glideTime, val) };
+	("[OSC] Glide time aggiornato: " + val).postln;
+}, "/controller/glideTime");
+
+
 // 1.2.5 Modalità MONO / POLY
 OSCdef(\monoModeFromGUI, { |msg|
 	var val = msg[1].asInteger.clip(0, 1);
@@ -501,13 +510,13 @@ OSCdef(\resetSynthParams, { |msg|
 	~decay = 0.3;
 	~sustain = 0.5;
 	~release = 0.3;
-	~cutoff = 10.00;
+	~cutoff = 20000;
 	~lfoFreq = 0.0;
 	~lfoDepth = 0.0;
 
 	("→ waveform1/2/3 reset a: " ++ ~waveformNames[0]).postln;
 	("→ ADSR: A %.3f D %.3f S %.3f R %.3f".format(~attack, ~decay, ~sustain, ~release)).postln;
-	("→ LFO: freq %.2fHz depth %.2f | LPF cutoff: %.1fHz".format(~lfoFreq, ~lfoDepth, ~cutoff)).postln;
+	("→ LFO: freq %.2fHz depth %.2f | LPF cutoff: %.1fHz".format(~lfoFreq, ~lfoDepth)).postln;
 
 	~notes.values.do({ |s|
 		s.set(
@@ -533,7 +542,7 @@ OSCdef(\resetSynthParams, { |msg|
 ~osc.sendMsg("/controller/sustain", ~sustain);
 ~osc.sendMsg("/controller/release", ~release);
 
-~osc.sendMsg("/controller/cutoff", ~cutoff);
+~osc.sendMsg("/controller/cutoff", 20.00);
 ~osc.sendMsg("/controller/lfoFreq", ~lfoFreq);
 ~osc.sendMsg("/controller/lfoDepth", ~lfoDepth);
 
@@ -684,6 +693,9 @@ OSCdef(\resetFXParams, { |msg|
 }, "/controller/resetFX");
 
 )
+
+
+
 
 
 
