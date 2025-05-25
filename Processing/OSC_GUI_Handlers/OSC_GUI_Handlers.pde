@@ -203,14 +203,7 @@ ellipse(rightPadCenter.x + rightPadX*padRadius,
     sendOSC("/controller/cutoff", newCutoff);
   }
 
-  // 2. Glide (↑↓)
-  if (glide_dir != 0) {
-    Slider glideSlider = cp5.get(Slider.class, "glide");
-    float currentGlide = glideSlider.getValue();
-    float newGlide = constrain(currentGlide + glide_dir * glideStep, 0.5, 2.0);
-    glideSlider.setValue(newGlide);
-    sendOSC("/controller/glide", newGlide);
-  }
+
 
   // === Reset automatico del colore delle frecce dopo 80ms
   int now = millis();
@@ -922,17 +915,8 @@ void mousePressed() {
         lastCutoffPressTime = millis();
         sendOSC("/controller/dpadLeft", 1);
       }
-    } else {
-      if (dy > 0) {
-        glide_dir = -1;
-        lastGlidePressTime = millis();
-        sendOSC("/controller/dpadDown", 1);
-      } else {
-        glide_dir = 1;
-        lastGlidePressTime = millis();
-        sendOSC("/controller/dpadUp", 1);
-      }
     }
+
   }
 
   // === Simboli cliccabili ===
@@ -973,8 +957,8 @@ if (dist(mouseX, mouseY, sx, sy + 60) < 30) {  // Croce
 }
 
 void mouseReleased() {
-  cutoff_dir = 0;
-  glide_dir = 0;
+  //cutoff_dir = 0;
+  //glide_dir = 0;
   trianglePressed = false;
   circlePressed = false;
   squarePressed = false;
@@ -1158,11 +1142,6 @@ void controlEvent(ControlEvent e) {
     
 }
 
-    
-
- 
-
-
 
 // === 5. Ricezione OSC ===
 void oscEvent(OscMessage m) {
@@ -1328,7 +1307,14 @@ void oscEvent(OscMessage m) {
      cp5.get(Toggle.class, "resetFXMode").setValue(1);
    }
    
-   
+   // Imposta un timeout per spegnere le frecce dopo 80 ms (come con il mouse)
+     if (addr.equals("/controller/dpadLeft") || addr.equals("/controller/dpadRight")) {
+     lastCutoffPressTime = millis();
+    }
+     if (addr.equals("/controller/dpadUp") || addr.equals("/controller/dpadDown")) {
+     lastGlidePressTime = millis();
+  }
+
     
     
     
