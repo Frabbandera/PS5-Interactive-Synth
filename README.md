@@ -112,7 +112,7 @@ PlaySynth creates an immersive real-time sound manipulation environment using a 
 
 ## 🎨 GUI Preview
 
-![PlaySynth GUI](https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PLAYSYNTH_GUI.png)
+![PlaySynth GUI](https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PlaySynth_GUI.png)
 
 > Colors are inspired by the PS button colors and by the 2000s cartoon "Teletubbies" – pastel red, yellow, green, violet.
 
