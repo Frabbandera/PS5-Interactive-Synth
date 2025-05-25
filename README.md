@@ -1,6 +1,6 @@
 # 🎮 PlaySynth – PS5/PS4 Interactive Synthesizer
 
-**PlaySynth** is an interactive synthesizer project that allows users to control audio synthesis parameters using a PlayStation 5 (DualSense) controller or PlayStation4 controller. The system integrates **SuperCollider** for sound synthesis, **Processing** for a dynamic graphical interface, and **Python** to handle controller inputs via the **OSC (Open Sound Control)** protocol.
+**PlaySynth** is an interactive synthesizer project that allows users to control audio synthesis parameters using a PlayStation 5 (DualSense) controller or PlayStation 4 controller. The system integrates **SuperCollider** for sound synthesis, **Processing** for a dynamic graphical interface, and **Python** to handle controller inputs via the **OSC (Open Sound Control)** protocol.
 
 > 🎓 Developed as a final project for the course *Computer Music – Languages and Systems* at Politecnico di Milano (MSc in Music & Acoustic Engineering).
 
