@@ -1,6 +1,6 @@
-# 🎮 PlaySynth – PS5 Interactive Synthesizer
+# 🎮 PlaySynth – PS5/PS4 Interactive Synthesizer
 
-**PlaySynth** is an interactive synthesizer project that allows users to control audio synthesis parameters using a PlayStation 5 (DualSense) controller. The system integrates **SuperCollider** for sound synthesis, **Processing** for a dynamic graphical interface, and **Python** to handle controller inputs via the **OSC (Open Sound Control)** protocol.
+**PlaySynth** is an interactive synthesizer project that allows users to control audio synthesis parameters using a PlayStation 5 (DualSense) controller or PlayStation4 controller. The system integrates **SuperCollider** for sound synthesis, **Processing** for a dynamic graphical interface, and **Python** to handle controller inputs via the **OSC (Open Sound Control)** protocol.
 
 > 🎓 Developed as a final project for the course *Computer Music – Languages and Systems* at Politecnico di Milano (MSc in Music & Acoustic Engineering).
 
@@ -59,12 +59,10 @@ Synth engine receives OSC to modulate sound in real time
 
   * D-Pad: Filter and Glide control
   * Circle/Square: Switch Mono/Poly modes
-  * Triangle/X: Toggle Arpeggio/Unison
+  * Triangle/Cross: Toggle Random Synthesis Parameters/Reset
   * L1/L2, R1/R2: Affect LFOs
-
-* 🔁 **RandomFX Button**: Randomizes all synthesis parameters
-
-* 🧼 **ResetFX Button**: Resets all parameters to default values
+  * PS button: Random FX parameters
+  * Touch Pad: Resets all parameters to default values
 
 ---
 
@@ -118,8 +116,6 @@ Synth engine receives OSC to modulate sound in real time
 
 * Randomize and reset waveforms, ADSR, LFO, filter by symbols pad (Triangle/Cross)
 * Randomize FX parameters by PSbutton and reset by Touch Pad
-
-* Label feedback of controller status (e.g. L1, R1 pressed)
 * GUI and sound engine stay synchronized through OSC
 
 ---
