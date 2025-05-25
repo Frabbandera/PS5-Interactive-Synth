@@ -239,7 +239,7 @@ while True:
         print("🎲 Randomizzazione parametri FX inviata")
         #time.sleep(0.2)  # debounce per evitare invii multipli
 
-    elif joystick.get_button(BUTTON_MUTE):
+    elif joystick.get_button(BUTTON_TOUCHPAD):
         client.send_message("/controller/resetFX", 1.0)
         print("🎲 Reset parametri FX inviata")
 
