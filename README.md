@@ -122,7 +122,7 @@ Synth engine receives OSC to modulate sound in real time
 
 ## 🎨 GUI Preview
 
-![PlaySynth GUI](https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/main/Resources/PlaySynth.png)
+![PlaySynth GUI](https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PLAYSYNTH.png)
 
 > Colors are inspired by the PS button colors and by the 2000s cartoon "Teletubbies" – pastel red, yellow, green, violet.
 
