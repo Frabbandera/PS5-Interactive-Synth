@@ -197,7 +197,6 @@ while True:
         glide = 1.0
 
     sent1, last_glide = send_if_changed("/controller/glide", glide, last_glide)
-    #sent2, last_glideTime = send_if_changed("/controller/glideTime", glideTime, last_glideTime)
     updated = updated or sent1 
 
 
@@ -219,27 +218,17 @@ while True:
     # 8.1.5 Modalità RANDOM/RESET
     if joystick.get_button(BUTTON_TRIANGLE):
         client.send_message("/controller/randomize", 1.0)
-        
-        
-        #client.send_message("/controller/polyMode", 0)
         print("🎚️ Modalità Random selezionata")
-        #time.sleep(0.2)  # debounce
 
     elif joystick.get_button(BUTTON_CROSS):
-        #client.send_message("/controller/monoMode", 0)
         client.send_message("/controller/reset", 1.0)
-        
-        
         print("🎚️ Modalità Reset selezionata")
-        #time.sleep(0.2)  # debounce
         
 
     # 8.1.6 Random Fx
-
     if joystick.get_button(BUTTON_PS):
         client.send_message("/controller/randomizeFX", 1.0)
         print("🎲 Randomizzazione parametri FX inviata")
-        #time.sleep(0.2)  # debounce per evitare invii multipli
 
     elif joystick.get_button(BUTTON_TOUCHPAD):
         client.send_message("/controller/resetFX", 1.0)
@@ -271,13 +260,11 @@ while True:
     roomSize = 0.5 - (ly_raw * 0.5)
     roomSize = max(0.0, min(1.0, roomSize))  # clip tra 0 e 1
     sent2, _ = send_if_changed("/controller/r_roomsize", roomSize, None)
-
     updated = updated or sent1 or sent2
 
 
     # 8.2.3 Delay (Stick sinistro X)
     lx_raw = joystick.get_axis(AXIS_LEFT_STICK_X)
-
     client.send_message("/controller/sendLevel2Raw", lx_raw)
 
     # Livello delay (massimo a ±1, minimo a 0)
@@ -288,16 +275,12 @@ while True:
     delayFeedback = 0.5 + (lx_raw * 0.5)
     delayFeedback = max(0.0, min(1.0, delayFeedback))  # clip tra 0 e 1
     sent4, _ = send_if_changed("/controller/de_feedback", delayFeedback, None)
-
     updated = updated or sent3 or sent4
-
 
 
     # 8.2.4 Flanger (Stick destro Y)
     ry_raw = joystick.get_axis(AXIS_RIGHT_STICK_Y)
-    
     client.send_message("/controller/sendLevel3Raw", ry_raw)
-
     sendLevel3 = abs(ry_raw)
     sent5, last_sendLevel3 = send_if_changed("/controller/sendLevel3", sendLevel3, last_sendLevel3)
     updated = updated or sent5
@@ -306,14 +289,11 @@ while True:
     amplitude = 0.5 - (ry_raw * 0.5)
     amplitude = max(0.0, min(1.0, amplitude))  # clip tra 0 e 1
     sent6, _ = send_if_changed("/controller/f_amplitude", amplitude, None)
-
     updated = updated or sent5 or sent6
-
 
 
     # 8.2.5 Distortion (Stick destro X) 
     rx_raw = joystick.get_axis(AXIS_RIGHT_STICK_X)
-
     client.send_message("/controller/sendLevel4Raw", rx_raw)
 
     # Livello distorsione (massimo a ±1, minimo a 0)
@@ -324,7 +304,6 @@ while True:
     distortionTone = 0.5 + (rx_raw * 0.5)
     distortionTone = max(0.0, min(1.0, distortionTone))  # clip tra 0 e 1
     sent8, _ = send_if_changed("/controller/di_tone", distortionTone, None)
-
     updated = updated or sent7 or sent8
 
     if updated:
