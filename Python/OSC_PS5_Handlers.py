@@ -59,7 +59,8 @@ AXIS_R2 = 5             # R2
 
 # 5. Inizializzazione parametri 
 glide = 1.0            # 1.0 = neutro, 2.0 = +1 ottava, 0.5 = -1 ottava
-glideTime = 0.2        # tempo del glide in secondi
+glideTime = 0.2 
+glide_range_octaves=1       
 last_glide = None
 last_glideTime = None
 
@@ -139,6 +140,7 @@ dispatcher.map("/controller/sendLevel1", update_sendLevel1)
 dispatcher.map("/controller/sendLevel2", update_sendLevel2)
 dispatcher.map("/controller/sendLevel3", update_sendLevel3)
 dispatcher.map("/controller/sendLevel4", update_sendLevel4)
+dispatcher.map("/controller/glideRange", lambda addr, val: globals().update(glide_range_octaves=int(val)))
 
 def start_osc_server():
     server = BlockingOSCUDPServer(("127.0.0.1", 12001), dispatcher)
@@ -187,10 +189,10 @@ while True:
     # 8.1.3 Glide (Freccia su = +1 ottava, Freccia giù = -1 ottava, altrimenti 1.0)
     if joystick.get_button(BUTTON_DPAD_UP):
         client.send_message("/controller/dpadUp", 1.0)
-        glide = 2.0
+        glide = 2.0 ** glide_range_octaves
     elif joystick.get_button(BUTTON_DPAD_DOWN):
         client.send_message("/controller/dpadDown", 1.0)
-        glide = 0.5
+        glide = 2.0 ** (-glide_range_octaves)
     else:
         glide = 1.0
 
