@@ -411,15 +411,6 @@ OSCdef(\glideFromController, { |msg|
 	("[OSC] Glide factor aggiornato: " + val).postln;
 }, "/controller/glide");
 
-// 1.1.3.2 Glide Time (quanto ci mette a scivolare)
-OSCdef(\glideTimeFromController, { |msg|
-	var val = msg[1].clip(0.01, 2.0);  // evita valori troppo bassi
-	~glideTime = val;
-	~notes.values.do { |s| s.set(\glideTime, val) };
-	("[OSC] Glide time aggiornato: " + val).postln;
-}, "/controller/glideTime");
-
-
 // 1.2.5 Modalità MONO / POLY
 OSCdef(\monoModeFromGUI, { |msg|
 	var val = msg[1].asInteger.clip(0, 1);
