@@ -5,8 +5,10 @@ import netP5.*;      // Gestione rete
 import oscP5.*;      // Gestione OSC
 import controlP5.*;  // Gestione GUI
 
-//logo
+//Loghi e font globale
 PImage logoImage;
+PImage psLogo;
+PFont uiFont;
 
 // 1.2 Dichiarazione oggetti principali
 NetAddress sc;
@@ -59,9 +61,11 @@ int lastR2Time = 0;
 
 // 1.4 Inizializzazione GUI
 void setup() {
-  
+
   logoImage = loadImage("https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PlaySynth.png");
   size(1430, 820);
+  
+  psLogo = loadImage("https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PlayStation-Logo.wine.png");
 
   // 1.4.1 Setup
   sc = new NetAddress("127.0.0.1", 57120);
@@ -74,6 +78,7 @@ void setup() {
   setupEnvelope();
   setupModulation();
   setupFX();
+  initFXParams(); 
   
  // 1.4.3 XY-Pads - Centrati visivamente
 leftPadCenter  = new PVector( 120 + padRadius, 450 + padRadius );               // Spostato più a destra
@@ -89,6 +94,9 @@ rightPadCenter = new PVector(width - (170 + padRadius), 450 + padRadius );    //
 void draw() {
   background(255, 253, 240);
   fill(240);
+   if (logoImage != null) {
+    image(logoImage, 50, 10, 120, 120);  // Posizione e dimensione del logo
+  }
 
   // Oscillatori
   fill(255, 245, 180);  
@@ -119,6 +127,18 @@ void draw() {
   noStroke();
   rect(90, 400, 1200, 390, 20);
   fill(0);
+
+// Logo sopra Random FX
+if (psLogo != null) {
+  image(psLogo, 662, 700, 40, 30);
+}
+
+// Etichetta sopra RESET FX
+textFont(uiFont);   // usa lo stesso font della GUI
+fill(40);
+textAlign(CENTER);
+textSize(12);
+text("Touch Pad", 685, 415);
 
 // === XY-PADS ottimizzati ===
 color knobColor = color(120, 180, 140); // lo stesso di .setColorBackground
@@ -398,16 +418,17 @@ void setupOscillators() {
       .setColorActive(color(180, 145, 60));
       
     cp5.addTextlabel("labelWaveform" + (i + 1))
-      .setText("Selected: —")
+      .setText("SELECTED: —")
       .setPosition(290, y0 - 15)
       .setColorValue(color(60))
-      .setFont(createFont("Arial", 12));
+      .setFont(createFont("Arial", 12))
+      .setColor(color(180, 145, 60));
 
     d.onChange(new CallbackListener() {
       public void controlEvent(CallbackEvent e) {
         int idx = (int) e.getController().getValue();
         cp5.get(Textlabel.class, "labelWaveform" + (index + 1))
-           .setText("Selected: " + getWaveformName(idx));
+           .setText("SELECTED: " + getWaveformName(idx));
       }
     });
 
@@ -444,7 +465,7 @@ void setupOscillators() {
       .setColorForeground(color(180, 145, 60))    // ambra
       .setColorActive(color(180, 145, 60));
   }
-  cp5.addSlider("glide")
+ Slider glideSlider = cp5.addSlider("glide")
     .setPosition(300, 350)
     .setSize(300, 20)
     .setRange(0.5, 2.0)
@@ -453,9 +474,13 @@ void setupOscillators() {
     .setLabel("Glide Factor")
     .setColorBackground(color(235, 215, 140))   // giallo sabbia
     .setColorForeground(color(180, 145, 60))    // ambra
-    .setColorActive(color(180, 145, 60))
-    .getCaptionLabel().align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE).setPaddingY(-35);
-    
+    .setColorActive(color(180, 145, 60));
+
+glideSlider.getCaptionLabel()
+  .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+  .setPaddingY(-35)
+  .setColor(color(180, 145, 60));
+ 
 // POLY a sinistra → spostato a destra
 cp5.addToggle("polyMode")
   .setPosition(1220, 60)  // prima era 1200
@@ -497,21 +522,24 @@ cp5.addToggle("randomMode")
   .setColorForeground(color(60, 180, 100))
   .setColorActive(color(100, 190, 100))    // verde pastello
   .setColorBackground(color(230));
+
+ cp5.getController("randomMode").getCaptionLabel()
+   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+   .setColor(color(100, 190, 100)); // verde pastello
   
-  // RANDOM FX (accanto a Random Synth)
+  // === RANDOM FX (senza gruppo, centrato visivamente)
 cp5.addToggle("randomFXMode")
-  .setPosition(1220, 340)   // sotto "Random Synth"
-  .setSize(60, 20)
+  .setPosition(652, 730)
+  .setSize(65, 30)
   .setValue(false)
-  .setGroup(oscGroup)
-  .setLabel("randomFX")
-  .setColorForeground(color(60, 180, 100))
-  .setColorActive(color(100, 190, 100))    // verde pastello
-  .setColorBackground(color(230));
+  .setLabel("RANDOM FX")
+  .setColorForeground(color(0))     // colore del bordo
+  .setColorActive(color(0))         // colore quando premuto
+  .setColorBackground(color(230));  // colore da inattivo
 
 cp5.getController("randomFXMode").getCaptionLabel()
    .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
-   .setColor(color(100, 190, 100)); // verde pastello
+   .setColor(color(0));
 
 
 // RESET a destra (sotto croce)
@@ -524,30 +552,24 @@ cp5.addToggle("resetMode")
   .setColorForeground(color(140, 100, 180))
   .setColorActive(color(170, 140, 200))    // viola pastello
   .setColorBackground(color(230));
-  
-  // RESET a destra (sotto croce)
-cp5.addToggle("resetFXMode")
-  .setPosition(1300, 340)   // simmetrico verticale rispetto a monoMode
-  .setSize(60, 20)
-  .setValue(false)
-  .setGroup(oscGroup)
-  .setLabel("ResetFX")
-  .setColorForeground(color(140, 100, 180))
-  .setColorActive(color(170, 140, 200))    // viola pastello
-  .setColorBackground(color(230));
-  
-  cp5.getController("resetFXMode").getCaptionLabel()
-   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
-   .setColor(color(170, 140, 200)); // viola pastello
-
-  cp5.getController("randomMode").getCaptionLabel()
-   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
-   .setColor(color(100, 190, 100)); // verde pastello
 
 cp5.getController("resetMode").getCaptionLabel()
    .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
    .setColor(color(170, 140, 200)); // viola pastello
+  
+   // === RESET FX (accanto al randomFX)
+cp5.addToggle("resetFXMode")
+  .setPosition(652, 420)
+  .setSize(65, 30)
+  .setValue(false)
+  .setLabel("RESET FX")
+  .setColorForeground(color(0))     // colore del bordo
+  .setColorActive(color(0))         // colore quando premuto
+  .setColorBackground(color(230));  // colore da inattivo
 
+cp5.getController("resetFXMode").getCaptionLabel()
+   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+   .setColor(color(0, 0, 0));
 
 }
 
@@ -667,7 +689,7 @@ cp5.getController("FX3").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(475, 445)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -680,7 +702,7 @@ cp5.getController("FX3").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(555, 445)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -693,7 +715,7 @@ cp5.getController("FX3").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(515, 515)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -718,7 +740,7 @@ cp5.getController("FX4").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(475, 650)
     .setRadius(25)
     .setRange(0,1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -731,7 +753,7 @@ cp5.getController("FX4").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(555, 650)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -744,7 +766,7 @@ cp5.getController("FX4").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(515, 720)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -769,7 +791,7 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(735, 445)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -782,7 +804,7 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(800, 445)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -795,7 +817,7 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(865, 445)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -804,11 +826,11 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setResolution(-100)
     .setLabel("Rate");
 
-  cp5.addKnob("f_feedback")
-    .setPosition(767, 515)
+ cp5.addKnob("f_feedback")
+    .setPosition(760, 515)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -818,10 +840,10 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setLabel("Feedback");
 
   cp5.addKnob("f_amplitude")
-    .setPosition(833, 515)
+    .setPosition(840, 515)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -846,7 +868,7 @@ cp5.getController("FX7").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(760, 650)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -859,7 +881,7 @@ cp5.getController("FX7").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(840, 650)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -872,7 +894,7 @@ cp5.getController("FX7").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(760, 720)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.5)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
@@ -885,7 +907,7 @@ cp5.getController("FX7").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setPosition(840, 720)
     .setRadius(25)
     .setRange(0, 1)
-    .setValue(0)
+    .setValue(0.3)
     .setGroup(fxGroup)
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
