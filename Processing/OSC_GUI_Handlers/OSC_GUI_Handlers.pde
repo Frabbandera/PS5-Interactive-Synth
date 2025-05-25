@@ -918,6 +918,39 @@ cp5.getController("FX7").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
   
 }
 
+void initFXParams() {
+  float defaultVal = 0.5;
+
+  // Reverb
+  sendOSC("/controller/r_roomsize", defaultVal);
+  sendOSC("/controller/r_damping", defaultVal);
+  sendOSC("/controller/r_mix", defaultVal);
+
+  // Delay
+  sendOSC("/controller/de_delaytime", defaultVal);
+  sendOSC("/controller/de_feedback", defaultVal);
+  sendOSC("/controller/de_mix", defaultVal);
+
+  // Flanger
+  sendOSC("/controller/f_drywet", defaultVal);
+  sendOSC("/controller/f_depth", defaultVal);
+  sendOSC("/controller/f_rate", defaultVal);
+  sendOSC("/controller/f_feedback", defaultVal);
+  sendOSC("/controller/f_amplitude", defaultVal);
+
+  // Distortion
+  sendOSC("/controller/di_drive", defaultVal);
+  sendOSC("/controller/di_tone", defaultVal);
+  sendOSC("/controller/di_mix", defaultVal);
+  sendOSC("/controller/di_output", defaultVal);
+
+  // XY Pads (FX send levels)
+  sendOSC("/controller/sendLevel1", defaultVal); // Reverb
+  sendOSC("/controller/sendLevel2", defaultVal); // Delay
+  sendOSC("/controller/sendLevel3", defaultVal); // Flanger
+  sendOSC("/controller/sendLevel4", defaultVal); // Distortion
+}
+
 // === 3. Gestione Pads ===
 // 3.1 Pads Frecce e Simboli
 void mousePressed() {
