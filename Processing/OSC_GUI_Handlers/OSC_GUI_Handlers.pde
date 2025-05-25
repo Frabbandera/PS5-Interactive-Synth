@@ -5,7 +5,7 @@ import netP5.*;      // Gestione rete
 import oscP5.*;      // Gestione OSC
 import controlP5.*;  // Gestione GUI
 
-//Loghi e font globale
+//logo
 PImage logoImage;
 PImage psLogo;
 PFont uiFont;
@@ -61,11 +61,12 @@ int lastR2Time = 0;
 
 // 1.4 Inizializzazione GUI
 void setup() {
-
+  
   logoImage = loadImage("https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PlaySynth.png");
   size(1430, 820);
   
   psLogo = loadImage("https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PlayStation-Logo.wine.png");
+
 
   // 1.4.1 Setup
   sc = new NetAddress("127.0.0.1", 57120);
@@ -78,14 +79,13 @@ void setup() {
   setupEnvelope();
   setupModulation();
   setupFX();
-  initFXParams(); 
   
  // 1.4.3 XY-Pads - Centrati visivamente
 leftPadCenter  = new PVector( 120 + padRadius, 450 + padRadius );               // Spostato più a destra
 rightPadCenter = new PVector(width - (170 + padRadius), 450 + padRadius );    // Spostato più a sinistra
 
   // 1.4.4 Font
-  PFont uiFont = createFont("Futura-Bold", 12);  
+  uiFont = createFont("Futura-Bold", 12);  
   textFont(uiFont);
   cp5.setFont(uiFont);
 }
@@ -94,7 +94,7 @@ rightPadCenter = new PVector(width - (170 + padRadius), 450 + padRadius );    //
 void draw() {
   background(255, 253, 240);
   fill(240);
-   if (logoImage != null) {
+  if (logoImage != null) {
     image(logoImage, 50, 10, 120, 120);  // Posizione e dimensione del logo
   }
 
@@ -127,8 +127,8 @@ void draw() {
   noStroke();
   rect(90, 400, 1200, 390, 20);
   fill(0);
-
-// Logo sopra Random FX
+  
+  // Logo sopra Random FX
 if (psLogo != null) {
   image(psLogo, 662, 700, 40, 30);
 }
@@ -211,18 +211,8 @@ ellipse(rightPadCenter.x + rightPadX*padRadius,
   text("R1", 920 + 12.5, 210 + 10);
 
   // LOGICA DI AGGIORNAMENTO PARAMETRI DA TASTI FRECCIA (GUI o Controller)
-  float cutoffStep = 0.3;
-  float glideStep = 0.05;
-
-  // 1. Cutoff (↔)
-  if (cutoff_dir != 0) {
-    Knob cutoffKnob = cp5.get(Knob.class, "cutoff");
-    float currentCutoff = cutoffKnob.getValue();
-    float newCutoff = constrain(currentCutoff + cutoff_dir * cutoffStep, 0, 20);
-    cutoffKnob.setValue(newCutoff);
-    sendOSC("/controller/cutoff", newCutoff);
-  }
-
+  //float cutoffStep = 0.3;
+  //float glideStep = 0.05;
 
 
   // === Reset automatico del colore delle frecce dopo 80ms
@@ -417,7 +407,7 @@ void setupOscillators() {
       .setColorForeground(color(180, 145, 60))    // ambra
       .setColorActive(color(180, 145, 60));
       
-    cp5.addTextlabel("labelWaveform" + (i + 1))
+cp5.addTextlabel("labelWaveform" + (i + 1))
       .setText("SELECTED: —")
       .setPosition(290, y0 - 15)
       .setColorValue(color(60))
@@ -465,7 +455,8 @@ void setupOscillators() {
       .setColorForeground(color(180, 145, 60))    // ambra
       .setColorActive(color(180, 145, 60));
   }
- Slider glideSlider = cp5.addSlider("glide")
+  
+Slider glideSlider = cp5.addSlider("glide")
     .setPosition(300, 350)
     .setSize(300, 20)
     .setRange(0.5, 2.0)
@@ -480,7 +471,7 @@ glideSlider.getCaptionLabel()
   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
   .setPaddingY(-35)
   .setColor(color(180, 145, 60));
- 
+    
 // POLY a sinistra → spostato a destra
 cp5.addToggle("polyMode")
   .setPosition(1220, 60)  // prima era 1200
@@ -522,12 +513,12 @@ cp5.addToggle("randomMode")
   .setColorForeground(color(60, 180, 100))
   .setColorActive(color(100, 190, 100))    // verde pastello
   .setColorBackground(color(230));
-
- cp5.getController("randomMode").getCaptionLabel()
+  
+    cp5.getController("randomMode").getCaptionLabel()
    .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
    .setColor(color(100, 190, 100)); // verde pastello
   
-  // === RANDOM FX (senza gruppo, centrato visivamente)
+  // RANDOM FX (accanto a Random Synth)
 cp5.addToggle("randomFXMode")
   .setPosition(652, 730)
   .setSize(65, 30)
@@ -552,12 +543,12 @@ cp5.addToggle("resetMode")
   .setColorForeground(color(140, 100, 180))
   .setColorActive(color(170, 140, 200))    // viola pastello
   .setColorBackground(color(230));
-
-cp5.getController("resetMode").getCaptionLabel()
+  
+  cp5.getController("resetMode").getCaptionLabel()
    .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
    .setColor(color(170, 140, 200)); // viola pastello
   
-   // === RESET FX (accanto al randomFX)
+  // RESET a destra (sotto croce)
 cp5.addToggle("resetFXMode")
   .setPosition(652, 420)
   .setSize(65, 30)
@@ -671,7 +662,7 @@ void setupModulation() {
 // 2.4 FXs Setup
 void setupFX() {
 
-  fxGroup = cp5.addGroup("FXPads");
+    fxGroup = cp5.addGroup("FXPads");
   
   cp5.addSlider("FX3")
     .setPosition(450, 420)
@@ -826,7 +817,7 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setResolution(-100)
     .setLabel("Rate");
 
- cp5.addKnob("f_feedback")
+  cp5.addKnob("f_feedback")
     .setPosition(760, 515)
     .setRadius(25)
     .setRange(0, 1)
@@ -915,40 +906,6 @@ cp5.getController("FX7").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setDragDirection(ControlP5.VERTICAL)
     .setResolution(-100)
     .setLabel("Output");
-  
-}
-
-void initFXParams() {
-  float defaultVal = 0.5;
-
-  // Reverb
-  sendOSC("/controller/r_roomsize", defaultVal);
-  sendOSC("/controller/r_damping", defaultVal);
-  sendOSC("/controller/r_mix", defaultVal);
-
-  // Delay
-  sendOSC("/controller/de_delaytime", defaultVal);
-  sendOSC("/controller/de_feedback", defaultVal);
-  sendOSC("/controller/de_mix", defaultVal);
-
-  // Flanger
-  sendOSC("/controller/f_drywet", defaultVal);
-  sendOSC("/controller/f_depth", defaultVal);
-  sendOSC("/controller/f_rate", defaultVal);
-  sendOSC("/controller/f_feedback", defaultVal);
-  sendOSC("/controller/f_amplitude", defaultVal);
-
-  // Distortion
-  sendOSC("/controller/di_drive", defaultVal);
-  sendOSC("/controller/di_tone", defaultVal);
-  sendOSC("/controller/di_mix", defaultVal);
-  sendOSC("/controller/di_output", defaultVal);
-
-  // XY Pads (FX send levels)
-  sendOSC("/controller/sendLevel1", defaultVal); // Reverb
-  sendOSC("/controller/sendLevel2", defaultVal); // Delay
-  sendOSC("/controller/sendLevel3", defaultVal); // Flanger
-  sendOSC("/controller/sendLevel4", defaultVal); // Distortion
 }
 
 // === 3. Gestione Pads ===
@@ -1362,13 +1319,7 @@ void oscEvent(OscMessage m) {
      cp5.get(Toggle.class, "resetFXMode").setValue(1);
    }
    
-   // Imposta un timeout per spegnere le frecce dopo 80 ms (come con il mouse)
-     if (addr.equals("/controller/dpadLeft") || addr.equals("/controller/dpadRight")) {
-     lastCutoffPressTime = millis();
-    }
-     if (addr.equals("/controller/dpadUp") || addr.equals("/controller/dpadDown")) {
-     lastGlidePressTime = millis();
-  }
+
 
     
     
