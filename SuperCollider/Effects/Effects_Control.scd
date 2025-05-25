@@ -18,7 +18,7 @@
 // 1.3 FX Flanger (JUCE)
 //~fxFlanger = Synth(\flangerFX, [\inBus, ~fxBus3, \out, 0.5], ~fxGroup);
 
-~fxFlanger = Synth(\flangerPluginFX, [\inBus, ~fxBus3, \out, 0.5], ~fxGroup);
+~fxFlanger = Synth(\flangerFX, [\inBus, ~fxBus3, \out, 0.5], ~fxGroup);
 ~flangerPluginPath = "C:/Program Files/Common Files/VST3/FlangerPlugin.vst3";
 ~flangerPlugin = VSTPluginController(~fxFlanger, id: \flangerplugin);
 ~flangerPlugin.open(~flangerPluginPath, editor: true, verbose: true);
