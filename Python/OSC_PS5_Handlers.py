@@ -160,9 +160,11 @@ while True:
 
     # 8.1.1 Debounced Cutoff (Freccia destra = incrementa, Freccia sinistra = decrementa)
     if joystick.get_button(BUTTON_DPAD_RIGHT):
+        client.send_message("/controller/dpadRight", 1.0)
         cutoff += cutoff_step
         last_cutoff_change = now
     elif joystick.get_button(BUTTON_DPAD_LEFT):
+        client.send_message("/controller/dpadLeft", 1.0)
         cutoff -= cutoff_step
         last_cutoff_change = now
     cutoff = max(0, min(20, cutoff))
@@ -186,8 +188,10 @@ while True:
 
     # 8.1.3 Glide (Freccia su = +1 ottava, Freccia giù = -1 ottava, altrimenti 1.0)
     if joystick.get_button(BUTTON_DPAD_UP):
+        client.send_message("/controller/dpadUp", 1.0)
         glide = 2.0
     elif joystick.get_button(BUTTON_DPAD_DOWN):
+        client.send_message("/controller/dpadDown", 1.0)
         glide = 0.5
     else:
         glide = 1.0
@@ -212,9 +216,6 @@ while True:
         print("🎚️ Modalità Poly selezionata")
 
 
-
-    
-
     # 8.1.5 Modalità RANDOM/RESET
     if joystick.get_button(BUTTON_TRIANGLE):
         client.send_message("/controller/randomize", 1.0)
@@ -231,6 +232,7 @@ while True:
         
         print("🎚️ Modalità Reset selezionata")
         #time.sleep(0.2)  # debounce
+        
 
     # 8.1.6 Random Fx
 
@@ -329,5 +331,3 @@ while True:
         print(f"LFO: {lfoFreq:.2f}, lfoDepth: {lfoDepth:.2f}, Cutoff: {cutoff:.2f}, Reverb Send: {sendLevel1:.2f}, Room Size: {roomSize:.2f}, Delay: {sendLevel2:.2f}, DelayFeedback: {delayFeedback:.2f},Flanger: {sendLevel3:.2f}, Distortion: {sendLevel4:.2f}, DistortionTone: {distortionTone:.2f},")
 
     time.sleep(0.05)
-
-
