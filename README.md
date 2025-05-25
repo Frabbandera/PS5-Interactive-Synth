@@ -18,22 +18,12 @@ PlaySynth creates an immersive real-time sound manipulation environment using a 
 
 ## 🧱 Architecture
 
-```
-[ PS5 Controller ]
-        ↓
-     [ Python ]
-Reads input using `pygame` and sends messages via OSC
-        ↓
-   [ Processing ]
-Receives OSC → updates GUI → sends messages to
-        ↓
- [ SuperCollider ]
-Synth engine receives OSC to modulate sound in real time
-```
+![blockdiagram](https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/blockdiagram.jpeg.jpg)
 
 * **Python** captures controller data and maps it to OSC messages.
 * **Processing** (Java-based) manages the graphical interface and routes interaction via OSC.
 * **SuperCollider** is the real-time audio engine.
+* **MIDI interaction** in SuperCollider.
 
 ---
 
@@ -122,37 +112,13 @@ Synth engine receives OSC to modulate sound in real time
 
 ## 🎨 GUI Preview
 
-![PlaySynth GUI](https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PLAYSYNTH.png)
+![PlaySynth GUI](https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PLAYSYNTH_GUI.png)
 
 > Colors are inspired by the PS button colors and by the 2000s cartoon "Teletubbies" – pastel red, yellow, green, violet.
 
 ---
 
-## 📂 Folder Structure
-
-```
-PS5-Interactive-Synth/
-│
-├── Python/
-│   └── osc_ps5_handler.py     # PS5 controller input and OSC sender
-│
-├── Processing/
-│   └── PS5_GUI.pde            # Full GUI and OSC interface
-│
-├── SuperCollider/
-│   ├── interactiveSynth.scd  # Main SynthDef with OSC responders
-│   └── ReverbPluginFX.scd    # Plugin-based effect implementation
-│
-├── JUCE_Plugins/              # Optional VST plugins (e.g. Flanger, Delay)
-│   └── ...
-│
-└── Resources/
-    └── PlaySynth.png          # Logo and assets
-```
-
----
-
-## 🧠 Credits
+## 📄 Credits
 
 * **Francesco Bandera**
 * **Francesco Crociani**
