@@ -5,7 +5,7 @@ import netP5.*;      // Gestione rete
 import oscP5.*;      // Gestione OSC
 import controlP5.*;  // Gestione GUI
 
-//logo
+// Logo
 PImage logoImage;
 PImage psLogo;
 PFont uiFont;
@@ -16,24 +16,24 @@ NetAddress py;
 OscP5 oscP5;
 ControlP5 cp5;
 
-  // Dichiarazione gruppi GUI
+  // 1.2.1 Dichiarazione gruppi GUI
 Group oscGroup, envGroup, lfoGroup, fxGroup, joypadGroup;  
 
-  // Dichiarazione variabili per XY Pads
+  // 1.2.2 Dichiarazione variabili per XY Pads
 PVector leftPadCenter, rightPadCenter;   
 float padRadius = 130;
 float leftPadX = 0, leftPadY = 0;   
 float rightPadX = 0, rightPadY = 0;
 
-  // Glide
-int cutoff_dir = 0;  // -1 sinistra, +1 destra
-int glide_dir = 0;   // -1 giù, +1 su
+  // 1.2.3 Glide
+int cutoff_dir = 0;  
+int glide_dir = 0;   
 int lastCutoffPressTime = 0;
 int lastGlidePressTime = 0;
 float glideMin = 0.5;
 float glideMax = 2.0;
 
-  // Posizione dei due joystick
+  // 1.2.4 Posizione dei due joystick
 PVector dpadCenter = new PVector(120, 200);         
 PVector symbolPadCenter = new PVector(1290, 200); 
 float dpadRadius = 90;
@@ -41,27 +41,24 @@ float symbolPadRadius = 90;
 float symbolButtonRadius = 28; 
 float symbolSpacing = dpadRadius * 0.65; 
 
-  // Variabili per SymbolPad
+  // 1.2.5 Variabili per SymbolPad
 PVector symbolPadUp, symbolPadDown, symbolPadLeft, symbolPadRight;
 boolean trianglePressed = false;
 boolean circlePressed = false;
 boolean squarePressed = false;
 boolean crossPressed = false;
 
-  // Stato illuminazione etichette controlli LFO e Cutoff
+  // 1.2.6 Stato illuminazione etichette controlli LFO e Cutoff
 boolean L1Pressed = false;
 boolean R1Pressed = false;
 boolean L2Pressed = false;
 boolean R2Pressed = false;
-
 int lastL1Time = 0;
 int lastR1Time = 0;
 int lastL2Time = 0;
 int lastR2Time = 0;
 
-
-
-// 1.4 Inizializzazione GUI
+// 1.3 Inizializzazione GUI
 void setup() {
   
   logoImage = loadImage("https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PlaySynth.png");
@@ -70,34 +67,34 @@ void setup() {
   psLogo = loadImage("https://raw.githubusercontent.com/Frabbandera/PS5-Interactive-Synth/refs/heads/main/Resources/PlayStation-Logo.wine.png");
 
 
-  // 1.4.1 Setup
+  // 1.3.1 Setup
   sc = new NetAddress("127.0.0.1", 57120);
   py = new NetAddress("127.0.0.1", 12001);
   oscP5 = new OscP5(this, 12000);
   cp5 = new ControlP5(this);
 
-  // 1.4.2 Sezioni GUI
+  // 1.3.2 Sezioni GUI
   setupOscillators();
   setupEnvelope();
   setupModulation();
   setupFX();
   
- // 1.4.3 XY-Pads - Centrati visivamente
-leftPadCenter  = new PVector( 120 + padRadius, 450 + padRadius );               // Spostato più a destra
-rightPadCenter = new PVector(width - (170 + padRadius), 450 + padRadius );    // Spostato più a sinistra
+ // 1.3.3 XY-Pads - Centrati visivamente
+ leftPadCenter  = new PVector( 120 + padRadius, 450 + padRadius );              
+ rightPadCenter = new PVector(width - (170 + padRadius), 450 + padRadius );    
 
-  // 1.4.4 Font
+  // 1.3.4 Font
   uiFont = createFont("Futura-Bold", 12);  
   textFont(uiFont);
   cp5.setFont(uiFont);
 }
 
-// 1.5 Gestione Sfondo e Sezioni
+// 1.4 Gestione Sfondo e Sezioni
 void draw() {
   background(255, 253, 240);
   fill(240);
   if (logoImage != null) {
-    image(logoImage, 50, 10, 120, 120);  // Posizione e dimensione del logo
+    image(logoImage, 50, 10, 120, 120);  
   }
 
   // Oscillatori
@@ -112,13 +109,13 @@ void draw() {
   rect(690, 10, 480, 180, 20);  
   fill(0);
 
-  // Contenitori smussati sotto slider ADSR
+  // Contenitori sotto slider ADSR
   drawRoundedRect(710, 40, 70, 120, color(255, 220, 220), 12);  // Attack
   drawRoundedRect(830, 40, 70, 120, color(255, 220, 220), 12);  // Decay
   drawRoundedRect(950, 40, 70, 120, color(255, 220, 220), 12);  // Sustain
   drawRoundedRect(1070, 40, 70, 120, color(255, 220, 220), 12); // Release
 
-  // Modulation
+  // Modulazione
   fill(200, 180, 255);
   noStroke();
   rect(690, 200, 480, 190, 20); 
@@ -131,43 +128,41 @@ void draw() {
   fill(0);
   
   // Logo sopra Random FX
-if (psLogo != null) {
+  if (psLogo != null) {
   image(psLogo, 662, 700, 40, 30);
-}
+  }
 
-// Etichetta sopra RESET FX
-textFont(uiFont);   // usa lo stesso font della GUI
-fill(40);
-textAlign(CENTER);
-textSize(12);
-text("Touch Pad", 685, 415);
+  // Etichetta sopra RESET FX
+  textFont(uiFont);   
+  fill(40);
+  textAlign(CENTER);
+  textSize(12);
+  text("Touch Pad", 685, 415);
 
-// === XY-PADS ottimizzati ===
-color knobColor = color(120, 180, 140); // lo stesso di .setColorBackground
-// === XY-PADS ottimizzati ===
+  // === XY-PADS ottimizzati ===
+  color knobColor = color(120, 180, 140); 
 
-// LEFT PAD
-noStroke(); // Rimuove il contorno
-fill(knobColor);
-ellipse(leftPadCenter.x, leftPadCenter.y, padRadius*2, padRadius*2);
+  // LEFT PAD
+  noStroke(); 
+  fill(knobColor);
+  ellipse(leftPadCenter.x, leftPadCenter.y, padRadius*2, padRadius*2);
 
-// Punto di controllo centrale (nero)
-fill(0);
-ellipse(leftPadCenter.x + leftPadX*padRadius,
-        leftPadCenter.y + leftPadY*padRadius,
-        16, 16);
+  // Punto di controllo centrale 
+  fill(0);
+  ellipse(leftPadCenter.x + leftPadX*padRadius,
+          leftPadCenter.y + leftPadY*padRadius,
+          16, 16);
 
-// RIGHT PAD
-noStroke(); // Rimuove il contorno
-fill(knobColor);
-ellipse(rightPadCenter.x, rightPadCenter.y, padRadius*2, padRadius*2);
+  // RIGHT PAD
+  noStroke(); 
+  fill(knobColor);
+  ellipse(rightPadCenter.x, rightPadCenter.y, padRadius*2, padRadius*2);
 
-// Punto di controllo centrale (nero)
-fill(0);
-ellipse(rightPadCenter.x + rightPadX*padRadius,
-        rightPadCenter.y + rightPadY*padRadius,
-        16, 16);
-
+  // Punto di controllo centrale 
+  fill(0);
+  ellipse(rightPadCenter.x + rightPadX*padRadius,
+          rightPadCenter.y + rightPadY*padRadius,
+          16, 16);
 
   // PADS frecce e simboli
   drawJoystickCircle(dpadCenter, 90);  
@@ -182,8 +177,8 @@ ellipse(rightPadCenter.x + rightPadX*padRadius,
   drawLabelBox(885 + 45 / 2 + 30, 225, "R1", color(180, 160, 230));
 
   // Cutoff 
-  drawArrowLabel(1030 + 22, 225, -1); // sinistra
-  drawArrowLabel(1030 + 68, 225, 1);  // destra
+  drawArrowLabel(1030 + 22, 225, -1); 
+  drawArrowLabel(1030 + 68, 225, 1);  
   
   // Etichette attive sopra i knob LFO e Cutoff 
   color baseViolet = color(200, 180, 255);
@@ -212,14 +207,8 @@ ellipse(rightPadCenter.x + rightPadX*padRadius,
   fill(255);
   text("R1", 920 + 12.5, 210 + 10);
 
-  // LOGICA DI AGGIORNAMENTO PARAMETRI DA TASTI FRECCIA (GUI o Controller)
-  //float cutoffStep = 0.3;
-  //float glideStep = 0.05;
-  
 
-
-
-  // === Reset automatico del colore delle frecce dopo 80ms
+  // Reset automatico del colore delle frecce dopo 80ms
   int now = millis();
   if (cutoff_dir != 0 && now - lastCutoffPressTime > 80) {
     cutoff_dir = 0;
@@ -230,30 +219,27 @@ ellipse(rightPadCenter.x + rightPadX*padRadius,
 }
 
 void drawJoystickCircle(PVector center, float radius) {
-  // Contorno grigio chiaro
   fill(230);
   noStroke();
   ellipse(center.x, center.y, radius * 2, radius * 2);
 
-  // Colori attivi
-  color activePurple = color(120, 90, 220);  // cutoff
-  color activeYellow = color(255, 200, 40);  // glide
-  color base = color(80); // colore di default
+  color activePurple = color(120, 90, 220);  
+  color activeYellow = color(255, 200, 40);  
+  color base = color(80); 
 
-  // Stato delle frecce
   boolean leftActive  = (cutoff_dir == -1);
   boolean rightActive = (cutoff_dir == 1);
   boolean upActive    = (glide_dir == 1);
   boolean downActive  = (glide_dir == -1);
 
-
-  // Triangolini
-  drawTriangle(center.x, center.y - radius * 0.6, 0, -1, upActive ? activeYellow : base);   // ↑ (punta in basso)
-  drawTriangle(center.x, center.y + radius * 0.6, 0, 1, downActive ? activeYellow : base); // ↓ (punta in alto)
-  drawTriangle(center.x - radius * 0.6, center.y, -1, 0, leftActive ? activePurple : base); // ← (punta a destra)
-  drawTriangle(center.x + radius * 0.6, center.y, 1, 0, rightActive ? activePurple : base); // → (punta a sinistra)
+  // Freccette
+  drawTriangle(center.x, center.y - radius * 0.6, 0, -1, upActive ? activeYellow : base);   
+  drawTriangle(center.x, center.y + radius * 0.6, 0, 1, downActive ? activeYellow : base); 
+  drawTriangle(center.x - radius * 0.6, center.y, -1, 0, leftActive ? activePurple : base); 
+  drawTriangle(center.x + radius * 0.6, center.y, 1, 0, rightActive ? activePurple : base); 
 }
 
+  // 1.5 Funzioni di supporto grafico
 void drawTriangle(float cx, float cy, int dx, int dy, color fillColor) {
   pushMatrix();
   translate(cx, cy);
@@ -268,22 +254,20 @@ void drawTriangle(float cx, float cy, int dx, int dy, color fillColor) {
   popMatrix();
 }
 
-
 void drawDpad(int cx, int cy) {
-  fill(230); // Grigio chiaro
+  fill(230); 
   noStroke();
-  ellipse(cx + 20, cy + 20, 160, 160); // sfondo circolare dietro le frecce
+  ellipse(cx + 20, cy + 20, 160, 160); 
 
   fill(70);
   stroke(0);
   strokeWeight(1);
   int s = 35;
 
-  // Quadrati freccia
-  rect(cx - s, cy, s, s, 7);  // ←
-  rect(cx + s, cy, s, s, 7);  // →
-  rect(cx, cy - s, s, s, 7);  // ↑
-  rect(cx, cy + s, s, s, 7);  // ↓
+  rect(cx - s, cy, s, s, 7);  
+  rect(cx + s, cy, s, s, 7);  
+  rect(cx, cy - s, s, s, 7);  
+  rect(cx, cy + s, s, s, 7);  
 
   fill(255);
   textAlign(CENTER, CENTER);
@@ -296,7 +280,7 @@ void drawDpad(int cx, int cy) {
 
 
 void drawSymbolPad(float cx, float cy) {
-  float r = 90;  // sfondo grande
+  float r = 90;  
   float symbolSpacing = 50;
   float symbolButtonRadius = 28;
   textAlign(CENTER, CENTER);
@@ -304,30 +288,25 @@ void drawSymbolPad(float cx, float cy) {
   PFont f = createFont("Arial Rounded MT Bold", 30);
   textFont(f);
 
-  // Sfondo grigio grande
   fill(230);
   noStroke();
   ellipse(cx, cy, 2 * r, 2 * r);
-
-  // TRIANGOLO ↑ (verde pastello)
+  
   fill(trianglePressed ? color(100, 190, 100) : color(170, 230, 170));
   ellipse(cx, cy - symbolSpacing, 2 * symbolButtonRadius, 2 * symbolButtonRadius);
   fill(0);
   text("▲", cx, cy - symbolSpacing);
 
-  // CERCHIO → (rosso pastello)
   fill(circlePressed ? color(200, 100, 100) : color(255, 180, 180));
   ellipse(cx + symbolSpacing, cy, 2 * symbolButtonRadius, 2 * symbolButtonRadius);
   fill(0);
   text("●", cx + symbolSpacing, cy);
 
-  // QUADRATO ← (giallo pastello)
   fill(squarePressed ? color(220, 200, 80) : color(255, 240, 160));
   ellipse(cx - symbolSpacing, cy, 2 * symbolButtonRadius, 2 * symbolButtonRadius);
   fill(0);
   text("■", cx - symbolSpacing, cy);
 
-  // X ↓ (viola pastello)
   fill(crossPressed ? color(170, 140, 200) : color(220, 190, 255));
   ellipse(cx, cy + symbolSpacing, 2 * symbolButtonRadius, 2 * symbolButtonRadius);
   fill(0);
@@ -352,7 +331,6 @@ void drawSymbolButton(float x, float y, float r, String label, color c) {
   text(label, x, y);
 }
 
-//etichette
 void drawLabelBox(float x, float y, String label, color bgColor) {
   rectMode(CENTER);
   fill(bgColor);
@@ -366,10 +344,10 @@ void drawLabelBox(float x, float y, String label, color bgColor) {
 }
 
 void drawArrowLabel(float x, float y, int direction) {
-  color arrowColor = color(120, 90, 220);  // viola pastello
+  color arrowColor = color(120, 90, 220);  
   pushMatrix();
   translate(x, y);
-  rotate(direction == -1 ? PI : 0);  // ← o →
+  rotate(direction == -1 ? PI : 0); 
   fill(arrowColor);
   noStroke();
   beginShape();
@@ -390,7 +368,7 @@ String getWaveformName(int index) {
 
 // === 2. Funzioni Setup GUI ===
 
-// 2.1 Oscillators
+// 2.1 Oscillatori
 void setupOscillators() {
 
   oscGroup = cp5.addGroup("Oscillators");
@@ -402,16 +380,16 @@ void setupOscillators() {
     int y0 = 30 + i * 100;
 
     DropdownList d = cp5.addDropdownList("waveform" + (i + 1))
-      .setPosition(290, y0)          // 20 → 250
+      .setPosition(290, y0)        
       .setSize(120, 80)
       .setItems(waveNames)
       .setGroup(oscGroup)
       .setLabel("Wave " + (index + 1))
-      .setColorBackground(color(235, 215, 140))   // giallo sabb
-      .setColorForeground(color(180, 145, 60))    // ambra
+      .setColorBackground(color(235, 215, 140))   
+      .setColorForeground(color(180, 145, 60))    
       .setColorActive(color(180, 145, 60));
       
-cp5.addTextlabel("labelWaveform" + (i + 1))
+   cp5.addTextlabel("labelWaveform" + (i + 1))
       .setText("SELECTED: —")
       .setPosition(290, y0 - 15)
       .setColorValue(color(60))
@@ -426,12 +404,11 @@ cp5.addTextlabel("labelWaveform" + (i + 1))
       }
     });
 
-    // Aumenta altezza delle righe del menu
-    d.setItemHeight(18);  // default è circa 20
-    d.setBarHeight(18);   // altezza della barra visibile quando il menu è chiuso
+    d.setItemHeight(18); 
+    d.setBarHeight(18);  
 
     cp5.addKnob("level" + (i + 1))
-      .setPosition(470, y0 + 10)     // 210 → 440
+      .setPosition(470, y0 + 10)    
       .setRadius(30)
       .setRange(0, 1)
       .setValue(0.3)
@@ -439,13 +416,12 @@ cp5.addTextlabel("labelWaveform" + (i + 1))
       .setLabel("Level")
       .setDragDirection(ControlP5.VERTICAL)
       .setResolution(-100)
-      .setColorBackground(color(235, 215, 140))   // giallo sabbia
-      .setColorForeground(color(180, 145, 60))    // ambra
+      .setColorBackground(color(235, 215, 140))   
+      .setColorForeground(color(180, 145, 60))    
       .setColorActive(color(180, 145, 60));
 
-
     cp5.addKnob("octave" + (i + 1))
-      .setPosition(570, y0 + 5)     // 320 → 550
+      .setPosition(570, y0 + 5)    
       .setRadius(30)
       .setRange(-2, 2)
       .snapToTickMarks(true)
@@ -455,136 +431,125 @@ cp5.addTextlabel("labelWaveform" + (i + 1))
       .setLabel("Octave")
       .setDragDirection(ControlP5.VERTICAL)
       .setResolution(-100)
-      .setColorBackground(color(235, 215, 140))   // giallo sabbia
-      .setColorForeground(color(180, 145, 60))    // ambra
+      .setColorBackground(color(235, 215, 140)) 
+      .setColorForeground(color(180, 145, 60))    
       .setColorActive(color(180, 145, 60));
   }
   
-Slider glideSlider = cp5.addSlider("glide")
-    .setPosition(475, 350)
-    .setSize(150, 20)
-    .setRange(0.5, 2.0)
-    .setValue(1.0)
-    .setGroup(oscGroup)
-    .setLabel("")
-    .setColorBackground(color(235, 215, 140))   // giallo sabbia
-    .setColorForeground(color(180, 145, 60))    // ambra
-    .setColorActive(color(180, 145, 60));
+   cp5.addSlider("glide")
+     .setPosition(475, 350)
+     .setSize(150, 20)
+     .setRange(0.5, 2.0)
+     .setValue(1.0)
+     .setGroup(oscGroup)
+     .setLabel("")
+     .setColorBackground(color(235, 215, 140))
+     .setColorForeground(color(180, 145, 60))    
+     .setColorActive(color(180, 145, 60));
 
-
-  
-    // Etichetta separata centrata sotto lo slider
-  cp5.addTextlabel("glideLabel")
-    .setText("GLIDE FACTOR")
-    .setPosition(470 + 75 - 40, 375)  // centrata: slider.x + slider.width/2 - offset visivo
-    .setGroup(oscGroup)
-    .setColorValue(color(180, 145, 60))
-    .setFont(createFont("Futura-Bold", 12));
-  
+   cp5.addTextlabel("glideLabel")
+     .setText("GLIDE FACTOR")
+     .setPosition(470 + 75 - 40, 375) 
+     .setGroup(oscGroup)
+     .setColorValue(color(180, 145, 60))
+     .setFont(createFont("Futura-Bold", 12));
+         
     String[] glideRangeOptions = {"1 octave", "2 octaves", "3 octaves"};
-
-  cp5.addDropdownList("glideRange")
-    .setPosition(290, 330) // accanto allo slider glide
-    .setSize(120, 60)
-    .setItems(glideRangeOptions)
-    .setGroup(oscGroup)
-    .setLabel("Glide Range")
-    .setColorBackground(color(235, 215, 140))
-    .setColorForeground(color(180, 145, 60))
-    .setColorActive(color(180, 145, 60))
-    .setItemHeight(18)
-    .setBarHeight(18)
-    .setValue(0); // default: 1 octave
+                
+   cp5.addDropdownList("glideRange")
+     .setPosition(290, 330) 
+     .setSize(120, 60)
+     .setItems(glideRangeOptions)
+     .setGroup(oscGroup)
+     .setLabel("Glide Range")
+     .setColorBackground(color(235, 215, 140))
+     .setColorForeground(color(180, 145, 60))
+     .setColorActive(color(180, 145, 60))
+     .setItemHeight(18)
+     .setBarHeight(18)
+     .setValue(0); 
     
-// POLY a sinistra → spostato a destra
-cp5.addToggle("polyMode")
-  .setPosition(1220, 60)  // prima era 1200
-  .setSize(60, 20)
-  .setValue(false)
-  .setGroup(oscGroup)
-  .setLabel("Poly")
-  .setColorForeground(color(180, 145, 60))
-  .setColorActive(color(250, 230, 100))    // giallo pastello
-  .setColorBackground(color(230));
+   cp5.addToggle("polyMode")
+     .setPosition(1220, 60)  
+     .setSize(60, 20)
+     .setValue(false)
+     .setGroup(oscGroup)
+     .setLabel("Poly")
+     .setColorForeground(color(180, 145, 60))
+     .setColorActive(color(250, 230, 100))    
+     .setColorBackground(color(230));
+ 
+   cp5.addToggle("monoMode")
+     .setPosition(1300, 60)  
+     .setSize(60, 20)
+     .setValue(true)
+     .setGroup(oscGroup)
+     .setLabel("Mono")
+     .setColorForeground(color(180, 145, 60))
+     .setColorActive(color(255, 100, 100))   
+     .setColorBackground(color(230));
 
-// MONO a destra → spostato a destra
-cp5.addToggle("monoMode")
-  .setPosition(1300, 60)  // prima era 1270
-  .setSize(60, 20)
-  .setValue(true)
-  .setGroup(oscGroup)
-  .setLabel("Mono")
-  .setColorForeground(color(180, 145, 60))
-  .setColorActive(color(255, 100, 100))    // rosso pastello
-  .setColorBackground(color(230));
+   cp5.getController("monoMode").getCaptionLabel()
+      .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+      .setColor(color(255, 100, 100));
 
-// Etichette centrate in basso
-cp5.getController("monoMode").getCaptionLabel()
-   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
-   .setColor(color(255, 100, 100));
+   cp5.getController("polyMode").getCaptionLabel()
+      .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+      .setColor(color(250, 230, 100));
 
-cp5.getController("polyMode").getCaptionLabel()
-   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
-   .setColor(color(250, 230, 100));
-   
- // RANDOM a sinistra (sotto triangolo)
-cp5.addToggle("randomMode")
-  .setPosition(1220, 310)   // simmetrico verticale rispetto a polyMode
-  .setSize(60, 20)
-  .setValue(false)
-  .setGroup(oscGroup)
-  .setLabel("Random")
-  .setColorForeground(color(60, 180, 100))
-  .setColorActive(color(100, 190, 100))    // verde pastello
-  .setColorBackground(color(230));
+   cp5.addToggle("randomMode")
+     .setPosition(1220, 310)   
+     .setSize(60, 20)
+     .setValue(false)
+     .setGroup(oscGroup)
+     .setLabel("Random")
+     .setColorForeground(color(60, 180, 100))
+     .setColorActive(color(100, 190, 100))    
+     .setColorBackground(color(230));
   
-    cp5.getController("randomMode").getCaptionLabel()
-   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
-   .setColor(color(100, 190, 100)); // verde pastello
+   cp5.getController("randomMode").getCaptionLabel()
+     .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+     .setColor(color(100, 190, 100)); 
   
-  // RANDOM FX (accanto a Random Synth)
-cp5.addToggle("randomFXMode")
-  .setPosition(652, 730)
-  .setSize(65, 30)
-  .setValue(false)
-  .setLabel("RANDOM FX")
-  .setColorForeground(color(0))     // colore del bordo
-  .setColorActive(color(0))         // colore quando premuto
-  .setColorBackground(color(230));  // colore da inattivo
+   cp5.addToggle("randomFXMode")
+     .setPosition(652, 730)
+     .setSize(65, 30)
+     .setValue(false)
+     .setLabel("RANDOM FX")
+     .setColorForeground(color(0))     
+     .setColorActive(color(0))         
+     .setColorBackground(color(230));  
 
-cp5.getController("randomFXMode").getCaptionLabel()
-   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
-   .setColor(color(0));
-
-
-// RESET a destra (sotto croce)
-cp5.addToggle("resetMode")
-  .setPosition(1300, 310)   // simmetrico verticale rispetto a monoMode
-  .setSize(60, 20)
-  .setValue(false)
-  .setGroup(oscGroup)
-  .setLabel("Reset")
-  .setColorForeground(color(140, 100, 180))
-  .setColorActive(color(170, 140, 200))    // viola pastello
-  .setColorBackground(color(230));
+   cp5.getController("randomFXMode").getCaptionLabel()
+      .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+      .setColor(color(0));
+ 
+   cp5.addToggle("resetMode")
+     .setPosition(1300, 310)   
+     .setSize(60, 20)
+     .setValue(false)
+     .setGroup(oscGroup)
+     .setLabel("Reset")
+     .setColorForeground(color(140, 100, 180))
+     .setColorActive(color(170, 140, 200))    
+     .setColorBackground(color(230));
   
-  cp5.getController("resetMode").getCaptionLabel()
-   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
-   .setColor(color(170, 140, 200)); // viola pastello
+   cp5.getController("resetMode").getCaptionLabel()
+     .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+     .setColor(color(170, 140, 200)); 
   
-  // RESET a destra (sotto croce)
-cp5.addToggle("resetFXMode")
-  .setPosition(652, 420)
-  .setSize(65, 30)
-  .setValue(false)
-  .setLabel("RESET FX")
-  .setColorForeground(color(0))     // colore del bordo
-  .setColorActive(color(0))         // colore quando premuto
-  .setColorBackground(color(230));  // colore da inattivo
+   cp5.addToggle("resetFXMode")
+     .setPosition(652, 420)
+     .setSize(65, 30)
+     .setValue(false)
+     .setLabel("RESET FX")
+     .setColorForeground(color(0))     
+     .setColorActive(color(0))         
+     .setColorBackground(color(230));  
 
-cp5.getController("resetFXMode").getCaptionLabel()
-   .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
-   .setColor(color(0, 0, 0));
+   cp5.getController("resetFXMode").getCaptionLabel()
+     .align(ControlP5.CENTER, ControlP5.BOTTOM_OUTSIDE)
+     .setColor(color(0, 0, 0));
 
 }
 
@@ -599,9 +564,9 @@ void setupEnvelope() {
     .setValue(0.01)
     .setGroup(envGroup)
     .setLabel("Attack")
-    .setColorBackground(color(255, 200, 200))   // rosa pastello chiaro
-    .setColorForeground(color(220, 100, 120))   // rosso medio
-    .setColorActive(color(180, 60, 80));        // rosso intenso
+    .setColorBackground(color(255, 200, 200))   
+    .setColorForeground(color(220, 100, 120))   
+    .setColorActive(color(180, 60, 80));        
 
   cp5.addSlider("decay")
     .setPosition(830, 40)
@@ -644,7 +609,7 @@ void setupModulation() {
   lfoGroup = cp5.addGroup("Modulation");
 
   cp5.addKnob("lfoFreq")
-    .setPosition(730, 245)   // 500 → 730
+    .setPosition(730, 245)   
     .setRadius(45)
     .setRange(0, 20)
     .setValue(0)
@@ -657,7 +622,7 @@ void setupModulation() {
     .setColorActive(color(80, 0, 160));
 
   cp5.addKnob("lfoDepth")
-    .setPosition(880, 245)   // 650 → 880
+    .setPosition(880, 245)   
     .setRadius(45)
     .setRange(0, 1)
     .setValue(0)
@@ -670,7 +635,7 @@ void setupModulation() {
     .setColorActive(color(80, 0, 160));
 
   cp5.addKnob("cutoff")
-    .setPosition(1030, 245)  // 800 → 1030
+    .setPosition(1030, 245)  
     .setRadius(45)
     .setRange(0, 20)
     .setValue(10)
@@ -698,7 +663,7 @@ void setupFX() {
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
     .setColorActive(color(20, 100, 20));
-cp5.getController("FX3").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE); // ✅ etichetta sopra
+  cp5.getController("FX3").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE); 
 
   cp5.addKnob("r_roomsize")
     .setPosition(475, 445)
@@ -749,7 +714,7 @@ cp5.getController("FX3").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
     .setColorActive(color(20, 100, 20));
-cp5.getController("FX4").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE); // ✅ etichetta sopra
+  cp5.getController("FX4").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE); 
 
   cp5.addKnob("de_delaytime")
     .setPosition(475, 650)
@@ -800,7 +765,7 @@ cp5.getController("FX4").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
     .setColorActive(color(20, 100, 20));
-cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE); // ✅ etichetta sopra
+  cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE); 
 
   cp5.addKnob("f_drywet")
     .setPosition(735, 445)
@@ -877,7 +842,7 @@ cp5.getController("FX6").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP
     .setColorBackground(color(120, 180, 140))
     .setColorForeground(color(20, 100, 20))
     .setColorActive(color(20, 100, 20));
-cp5.getController("FX7").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE); // ✅ etichetta sopra
+  cp5.getController("FX7").getCaptionLabel().align(ControlP5.CENTER, ControlP5.TOP_OUTSIDE); 
 
   cp5.addKnob("di_drive")
     .setPosition(760, 650)
@@ -960,41 +925,37 @@ void mousePressed() {
   float sy = symbolPadCenter.y;
 
   // Joystick Simboli cliccabili precisi
-if (dist(mouseX, mouseY, sx, sy - 60) < 30) {  // Triangolo
-  trianglePressed = true;
-  cp5.get(Toggle.class, "randomMode").setValue(1);
-  cp5.get(Toggle.class, "resetMode").setValue(0);
-  sendOSC("/controller/randomize", 1);
-}
+  if (dist(mouseX, mouseY, sx, sy - 60) < 30) {  
+    trianglePressed = true;
+    cp5.get(Toggle.class, "randomMode").setValue(1);
+    cp5.get(Toggle.class, "resetMode").setValue(0);
+    sendOSC("/controller/randomize", 1);
+  }
 
-if (dist(mouseX, mouseY, sx, sy + 60) < 30) {  // Croce
-  crossPressed = true;
-  cp5.get(Toggle.class, "resetMode").setValue(1);
-  cp5.get(Toggle.class, "randomMode").setValue(0);
-  sendOSC("/controller/reset", 1);
-}
+  if (dist(mouseX, mouseY, sx, sy + 60) < 30) {  
+    crossPressed = true;
+    cp5.get(Toggle.class, "resetMode").setValue(1);
+    cp5.get(Toggle.class, "randomMode").setValue(0);
+    sendOSC("/controller/reset", 1);
+  }
 
-  if (dist(mouseX, mouseY, sx - 60, sy) < 30) {         // Quadrato
+  if (dist(mouseX, mouseY, sx - 60, sy) < 30) {         
     squarePressed = true;
     cp5.get(Toggle.class, "polyMode").setValue(1);
     cp5.get(Toggle.class, "monoMode").setValue(0);
     sendOSC("/controller/polyMode", 1);
     sendOSC("/controller/monoMode", 0);
-    //sendOSC("/controller/buttonSquare", 1);
   }
-  if (dist(mouseX, mouseY, sx + 60, sy) < 30) {         // Cerchio
+  if (dist(mouseX, mouseY, sx + 60, sy) < 30) {         
     circlePressed = true;
     cp5.get(Toggle.class, "monoMode").setValue(1);
     cp5.get(Toggle.class, "polyMode").setValue(0);
     sendOSC("/controller/monoMode", 1);
     sendOSC("/controller/polyMode", 0);
-    //sendOSC("/controller/buttonCircle", 1);
   }
 }
 
 void mouseReleased() {
-  //cutoff_dir = 0;
-  //glide_dir = 0;
   trianglePressed = false;
   circlePressed = false;
   squarePressed = false;
@@ -1002,11 +963,9 @@ void mouseReleased() {
 }
 
 // 3.2 XY-Pads
-
 PVector computePad(PVector c) {
   float dx = mouseX - c.x;
   float dy = mouseY - c.y;
-  // se il click è fuori dal cerchio, rimappo sul bordo
   float d = dist(mouseX, mouseY, c.x, c.y);
   if (d > padRadius) {
     dx *= padRadius / d;
@@ -1016,12 +975,10 @@ PVector computePad(PVector c) {
 }
 
 void mouseDragged() {
-  // se dentro left pad
   if (dist(mouseX, mouseY, leftPadCenter.x, leftPadCenter.y) < padRadius) {
     PVector v = computePad(leftPadCenter);
     leftPadX = v.x;
     leftPadY = v.y;
-    // aggiorno GUI e OSC
     float reverb = abs(leftPadY);
     float delay  = abs(leftPadX);
     cp5.get(Slider.class, "FX3").setValue(reverb);
@@ -1029,7 +986,7 @@ void mouseDragged() {
     sendOSC("/controller/sendLevel1", reverb);
     sendOSC("/controller/sendLevel2", delay);
   }
-  // se dentro right pad
+  
   if (dist(mouseX, mouseY, rightPadCenter.x, rightPadCenter.y) < padRadius) {
     PVector v = computePad(rightPadCenter);
     rightPadX = v.x;
@@ -1080,7 +1037,7 @@ void controlEvent(ControlEvent e) {
     sendOSC("/controller/release", val);
 
     // 4.2.3 Fxs
-  } else if (name.equals("FX3")) {               // riverbero
+  } else if (name.equals("FX3")) {             
     sendOSC("/controller/sendLevel1", val);
   } else if (name.equals("r_roomsize")) {
     sendOSC("/controller/r_roomsize", val);
@@ -1090,7 +1047,8 @@ void controlEvent(ControlEvent e) {
     sendOSC("/controller/r_mix", val);
   } else if (name.equals("r_predelay")) {
     sendOSC("/controller/r_predelay", val);
-  } else if (name.equals("FX4")) {
+    
+  } else if (name.equals("FX4")) {            
     sendOSC("/controller/sendLevel2", val);
   } else if (name.equals("de_delaytime")) {
     sendOSC("/controller/de_delaytime", val);
@@ -1098,7 +1056,8 @@ void controlEvent(ControlEvent e) {
     sendOSC("/controller/de_feedback", val);
   } else if (name.equals("de_mix")) {
     sendOSC("/controller/de_mix", val);
-  } else if (name.equals("FX6")) {
+    
+  } else if (name.equals("FX6")) {             
     sendOSC("/controller/sendLevel3", val);
   } else if (name.equals("f_drywet")) {
     sendOSC("/controller/f_drywet", val);
@@ -1110,6 +1069,7 @@ void controlEvent(ControlEvent e) {
     sendOSC("/controller/f_feedback", val);
   } else if (name.equals("f_amplitude")) {
     sendOSC("/controller/f_amplitude", val);
+     
   } else if (name.equals("FX7")) {
     sendOSC("/controller/sendLevel4", val);
   } else if (name.equals("di_drive")) {
@@ -1141,19 +1101,12 @@ void controlEvent(ControlEvent e) {
   } else if (name.startsWith("waveform")) {
     int idx = (int) val;
     sendOSC("/controller/" + name, idx);
-
+   
     // 4.2.7 Glide
-  //} else if (name.equals("glide")) {
-  //  sendOSC("/controller/glide", val);
-
-    
-    
-        // 4.2.7 Glide
   } else if (name.equals("glide")) {
     sendOSC("/controller/glide", val);
   } else if (name.equals("glideRange")) {
   int selected = (int) val;
-  
   // aggiorna i limiti in base alla selezione
   if (selected == 0) { // 1 octave
     glideMin = 0.5;
@@ -1165,22 +1118,20 @@ void controlEvent(ControlEvent e) {
     glideMin = 0.125;
     glideMax = 8.0;
   }
-
   // aggiorna dinamicamente i limiti dello slider
   Slider glideSlider = cp5.get(Slider.class, "glide");
   glideSlider.setRange(glideMin, glideMax);
-  sendOSC("/controller/glideRange", selected + 1);  // invia 1, 2 o 3
+  sendOSC("/controller/glideRange", selected + 1);  
     
     // 4.2.8 POLY MONO
   } else if (name.equals("monoMode") && val == 1) {
-    cp5.get(Toggle.class, "polyMode").setValue(0); // Disattiva il toggle opposto
-    sendOSC("/controller/monoMode", 1);         // Attiva modalità mono
+    cp5.get(Toggle.class, "polyMode").setValue(0); 
+    sendOSC("/controller/monoMode", 1);         
   } else if (name.equals("polyMode") && val == 1) {
-    cp5.get(Toggle.class, "monoMode").setValue(0); // Disattiva il toggle opposto
-    sendOSC("/controller/polyMode", 1);         // Attiva modalità poly
+    cp5.get(Toggle.class, "monoMode").setValue(0); 
+    sendOSC("/controller/polyMode", 1);         
   
-      // 4.2.9 RANDOM RESET synth
-      
+    // 4.2.9 RANDOM RESET synth 
   } else if (name.equals("randomMode") && val == 1) {
     cp5.get(Toggle.class, "resetMode").setValue(0); 
     sendOSC("/controller/randomize", 1);         
@@ -1189,16 +1140,14 @@ void controlEvent(ControlEvent e) {
     sendOSC("/controller/reset", 1); 
   }
   
-  // 4.2.10 Random e reset fx
-  
+    // 4.2.10 Random e reset fx
     else if (name.equals("randomFXMode") && val == 1) {
     cp5.get(Toggle.class, "resetFXMode").setValue(0);
     sendOSC("/controller/randomizeFX", 1);
   } else if (name.equals("resetFXMode") && val == 1) {
     cp5.get(Toggle.class, "randomFXMode").setValue(0); 
     sendOSC("/controller/resetFX", 1); 
-  }
-    
+  }    
 }
 
 
@@ -1216,7 +1165,7 @@ void oscEvent(OscMessage m) {
   } else if (addr.equals("/controller/lfoDepth")) {
     cp5.get(Knob.class, "lfoDepth").setValue(val);
 
-    // 5.2 Envelope (ADSR)
+  // 5.2 Envelope (ADSR)
   } else if (addr.equals("/controller/attack")) {
     val = constrain(val, 0.001, 5.0);
     cp5.get(Slider.class, "attack").setValue(val);
@@ -1227,13 +1176,12 @@ void oscEvent(OscMessage m) {
   } else if (addr.equals("/controller/release")) {
     cp5.get(Slider.class, "release").setValue(val);
 
-    // 5.3 FXs
+  // 5.3 FXs
   } else if (addr.equals("/controller/sendLevel1Raw")) {
     leftPadY = val;
     cp5.get(Slider.class, "FX3").setValue(abs(val));
   } else if (addr.equals("/controller/sendLevel1")) {
-    cp5.get(Slider.class, "FX3").setValue(val);
-    
+    cp5.get(Slider.class, "FX3").setValue(val);   
   } else if (addr.equals("/controller/r_roomsize")) {
     cp5.get(Knob.class, "r_roomsize").setValue(val);
   } else if (addr.equals("/controller/r_mix")) {
@@ -1285,7 +1233,7 @@ void oscEvent(OscMessage m) {
       } else if (addr.equals("/controller/di_output")) {
     cp5.get(Knob.class, "di_output").setValue(val);
     
-    // 5.4 Waveforms Levels
+  // 5.4 Waveforms Levels
   } else if (addr.equals("/controller/level1")) {
     cp5.get(Knob.class, "level1").setValue(val);
   } else if (addr.equals("/controller/level2")) {
@@ -1293,7 +1241,7 @@ void oscEvent(OscMessage m) {
   } else if (addr.equals("/controller/level3")) {
     cp5.get(Knob.class, "level3").setValue(val);
 
-    // 5.5 Waveforms Types
+  // 5.5 Waveforms Types
   } else if (addr.equals("/controller/waveform1")) {
     cp5.get(DropdownList.class, "waveform1").setValue(val);
   } else if (addr.equals("/controller/waveform2")) {
@@ -1301,7 +1249,7 @@ void oscEvent(OscMessage m) {
   } else if (addr.equals("/controller/waveform3")) {
     cp5.get(DropdownList.class, "waveform3").setValue(val);
 
-    // 5.6 Waveforms Octaves
+  // 5.6 Waveforms Octaves
   } else if (addr.equals("/controller/octave1")) {
     cp5.get(Knob.class, "octave1").setValue(val);
   } else if (addr.equals("/controller/octave2")) {
@@ -1309,14 +1257,14 @@ void oscEvent(OscMessage m) {
   } else if (addr.equals("/controller/octave3")) {
     cp5.get(Knob.class, "octave3").setValue(val);
 
-    // 5.7 Glide
+  // 5.7 Glide
   } else if (addr.equals("/controller/glide")) {
     cp5.get(Slider.class, "glide").setValue(val);
   } else {
     println("OSC ricevuto: " + addr + " = " + val);
   }
 
-  // === Gestione frecce PS5 ===
+  // 5.8 Gestione frecce PS5 
   if (addr.equals("/controller/dpadLeft")) {
     cutoff_dir = -1;
     lastCutoffPressTime = millis();
@@ -1330,19 +1278,19 @@ void oscEvent(OscMessage m) {
     glide_dir = -1;
     lastGlidePressTime = millis();
     
-    // 5.8 Modalità Mono / Poly
+  // 5.9 Modalità Mono / Poly
   } else if (addr.equals("/controller/monoMode")) {
     if (val==1.0) {
     cp5.get(Toggle.class, "monoMode").setValue(1);
-    cp5.get(Toggle.class, "polyMode").setValue(0);  // Disattiva l'altro
+    cp5.get(Toggle.class, "polyMode").setValue(0);  
     }
   } else if (addr.equals("/controller/polyMode")) {
     if (val == 1.0) {
     cp5.get(Toggle.class, "polyMode").setValue(1);
-    cp5.get(Toggle.class, "monoMode").setValue(0);// Disattiva l'altro
+    cp5.get(Toggle.class, "monoMode").setValue(0);
     }
     
-    // 5.8 Modalità Random / Reset sintesi
+  // 5.10 Modalità Random / Reset sintesi
   } else if (addr.equals("/controller/randomize")) {
     if (val==1.0) {
     cp5.get(Toggle.class, "randomMode").setValue(1);
@@ -1355,6 +1303,7 @@ void oscEvent(OscMessage m) {
     //sendOSC("/controller/reset", 1);// Disattiva l'altro
    }
    
+   // 5.11 Modalità Random / Reset parametri FX
    } else if (addr.equals("/controller/randomizeFX")) {
      if (val == 1.0) {
      cp5.get(Toggle.class, "resetFXMode").setValue(0);
@@ -1365,11 +1314,8 @@ void oscEvent(OscMessage m) {
      cp5.get(Toggle.class, "randomFXMode").setValue(0);
      cp5.get(Toggle.class, "resetFXMode").setValue(1);
    }
-    
 
-    
-
-  // Joystick Simboli
+  // 5.12 Joystick Simboli
   } else if (dist(mouseX, mouseY, symbolPadCenter.x, symbolPadCenter.y - 50) < 28) {
     trianglePressed = true;
     sendOSC("/controller/buttonTriangle", 1);
