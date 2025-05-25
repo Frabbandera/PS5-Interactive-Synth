@@ -59,7 +59,8 @@ AXIS_R2 = 5             # R2
 
 # 5. Inizializzazione parametri 
 glide = 1.0            # 1.0 = neutro, 2.0 = +1 ottava, 0.5 = -1 ottava
-glideTime = 0.2        # tempo del glide in secondi
+glideTime = 0.2 
+glide_range_octaves=1       
 last_glide = None
 last_glideTime = None
 
@@ -86,12 +87,12 @@ last_sendLevel4 = None
 # GPT
 def update_lfoFreq(addr, value):
     global lfoFreq, last_lfoFreq
-    lfoFreq = max(0, min(20, value))
+    lfoFreq = max(0.0, min(20.0, value))
     last_lfoFreq = lfoFreq
 
 def update_lfoDepth(addr, value):
     global lfoDepth, last_lfoDepth
-    lfoDepth = max(0, min(1.0, value))
+    lfoDepth = max(0.0, min(1.0, value))
     last_lfoDepth = lfoDepth
 
 def update_cutoff(addr, value):
@@ -139,6 +140,7 @@ dispatcher.map("/controller/sendLevel1", update_sendLevel1)
 dispatcher.map("/controller/sendLevel2", update_sendLevel2)
 dispatcher.map("/controller/sendLevel3", update_sendLevel3)
 dispatcher.map("/controller/sendLevel4", update_sendLevel4)
+dispatcher.map("/controller/glideRange", lambda addr, val: globals().update(glide_range_octaves=int(val)))
 
 def start_osc_server():
     server = BlockingOSCUDPServer(("127.0.0.1", 12001), dispatcher)
@@ -153,8 +155,6 @@ while True:
     updated = False  # flag per sapere se qualcosa è cambiato
 
     now = time.time()
-
-
 
     # 8.1 BUTTONS
 
@@ -180,7 +180,7 @@ while True:
     elif joystick.get_button(BUTTON_L1):
         lfoDepth -= lfoDepth_step
         last_lfoDepth_change = now
-    lfoDepth = max(0, min(1.0, lfoDepth))
+    lfoDepth = max(0.0, min(1.0, lfoDepth))
     sent, last_lfoDepth = send_if_changed("/controller/lfoDepth", lfoDepth, last_lfoDepth, threshold=0 if force_sync else 1e-6)
     if force_sync:
         force_sync = False
@@ -189,10 +189,10 @@ while True:
     # 8.1.3 Glide (Freccia su = +1 ottava, Freccia giù = -1 ottava, altrimenti 1.0)
     if joystick.get_button(BUTTON_DPAD_UP):
         client.send_message("/controller/dpadUp", 1.0)
-        glide = 2.0
+        glide = 2.0 ** glide_range_octaves
     elif joystick.get_button(BUTTON_DPAD_DOWN):
         client.send_message("/controller/dpadDown", 1.0)
-        glide = 0.5
+        glide = 2.0 ** (-glide_range_octaves)
     else:
         glide = 1.0
 
@@ -253,7 +253,7 @@ while True:
     r2 = (joystick.get_axis(AXIS_R2) + 1) / 2
     delta = r2 - l2
     lfoFreq += delta * 0.5
-    lfoFreq = max(0, min(20, lfoFreq))
+    lfoFreq = max(0.0, min(20.0, lfoFreq))
     sent, last_lfoFreq = send_if_changed("/controller/lfoFreq", lfoFreq, last_lfoFreq)
     updated = updated or sent
 
@@ -269,7 +269,7 @@ while True:
 
     # Room size: 0.5 al centro, sale a 1.0 con ly = +1, scende a 0.0 con ly = -1
     roomSize = 0.5 - (ly_raw * 0.5)
-    roomSize = max(0, min(1, roomSize))  # clip tra 0 e 1
+    roomSize = max(0.0, min(1.0, roomSize))  # clip tra 0 e 1
     sent2, _ = send_if_changed("/controller/r_roomsize", roomSize, None)
 
     updated = updated or sent1 or sent2
@@ -286,7 +286,7 @@ while True:
 
     # Delay Feedback: 0.5 al centro, sale a 1.0 con lx = +1, scende a 0.0 con lx = -1
     delayFeedback = 0.5 + (lx_raw * 0.5)
-    delayFeedback = max(0, min(1, delayFeedback))  # clip tra 0 e 1
+    delayFeedback = max(0.0, min(1.0, delayFeedback))  # clip tra 0 e 1
     sent4, _ = send_if_changed("/controller/de_feedback", delayFeedback, None)
 
     updated = updated or sent3 or sent4
@@ -304,7 +304,7 @@ while True:
 
     # Room size: 0.5 al centro, sale a 1.0 con ly = +1, scende a 0.0 con ly = -1
     amplitude = 0.5 - (ry_raw * 0.5)
-    amplitude = max(0, min(1, amplitude))  # clip tra 0 e 1
+    amplitude = max(0.0, min(1.0, amplitude))  # clip tra 0 e 1
     sent6, _ = send_if_changed("/controller/f_amplitude", amplitude, None)
 
     updated = updated or sent5 or sent6
@@ -322,7 +322,7 @@ while True:
     
     # Distortion Tone: 0.5 al centro, sale a 1.0 con rx = +1, scende a 0.0 con rx = -1
     distortionTone = 0.5 + (rx_raw * 0.5)
-    distortionTone = max(0, min(1, distortionTone))  # clip tra 0 e 1
+    distortionTone = max(0.0, min(1.0, distortionTone))  # clip tra 0 e 1
     sent8, _ = send_if_changed("/controller/di_tone", distortionTone, None)
 
     updated = updated or sent7 or sent8
