@@ -5,7 +5,7 @@
 
 // 1.1 FX Reverb (JUCE)
 ~fxReverb = Synth(\reverbPluginFX, [\inBus, ~fxBus1, \out, 0.5], ~fxGroup);     // Crea un'istanza del SynthDef \ReverbPluginFX, ricevendo segnale da ~fxBus1 e mandandolo in uscita
-~reverbPluginPath = "C:/Program Files/Common Files/VST3/Riverb_prova.vst3";     // Specifica il percorso del plugin VST .vst3 sul sistema
+~reverbPluginPath = "C:/Program Files/Common Files/VST3/RiverbPlugin.vst3";     // Specifica il percorso del plugin VST .vst3 sul sistema
 ~reverbPlugin = VSTPluginController(~fxReverb, id: \reverbplugin);              // Collega un controller VST all'istanza Synth appena creata
 ~reverbPlugin.open(~reverbPluginPath, editor: true, verbose: true);             // Apre il plugin dal percorso indicato, mostra l'interfaccia grafica, stampa info dettagliate
 
@@ -16,8 +16,6 @@
 ~delayPlugin.open(~delayPluginPath, editor: true, verbose: true);
 
 // 1.3 FX Flanger (JUCE)
-//~fxFlanger = Synth(\flangerFX, [\inBus, ~fxBus3, \out, 0.5], ~fxGroup);
-
 ~fxFlanger = Synth(\flangerFX, [\inBus, ~fxBus3, \out, 0.5], ~fxGroup);
 ~flangerPluginPath = "C:/Program Files/Common Files/VST3/FlangerPlugin.vst3";
 ~flangerPlugin = VSTPluginController(~fxFlanger, id: \flangerplugin);
